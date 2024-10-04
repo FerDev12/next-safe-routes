@@ -1,10 +1,13 @@
 {
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "outDir": "dist",
+    "allowJs": true,
     "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "ESNext",
+    "moduleDetection": "auto",
+    "moduleResolution": "node",
+    "outDir": "./dist",
     "paths": {
       "@/*": ["./src/*"]
     }

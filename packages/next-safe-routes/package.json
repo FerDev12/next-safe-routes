@@ -16,27 +16,59 @@
   "bin": {
     "generate-routes": "./dist/cli/generate-routes.js"
   },
-  "keywords": [],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
+    },
+    "./plugin": {
+      "import": "./dist/lib/plugin/index.js",
+      "types": "./dist/lib/plugin/index.d.ts",
+      "require": "./dist/lib/plugin/index.js"
+    },
+    "./navigation": {
+      "import": "./dist/lib/navigation.ts",
+      "types": "./dist/lib/navigation.d.ts",
+      "export": "./dist/lib/navigation.ts"
+    },
+    "./create-get-safe-route": {
+      "import": "./dist/lib/navigation/create-get-safe-route.ts",
+      "types": "./dist/lib/navigation/create-get-safe-route.d.ts",
+      "export": "./dist/lib/navigation/create-get-safe-route.ts"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "keywords": [
+    "next",
+    "react",
+    "routes",
+    "navigation",
+    "type safe",
+    "safe routes"
+  ],
   "author": "FerDev12",
   "license": "MIT",
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
     "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@types/node": "^22",
+    "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/yargs": "^17.0.33",
     "eslint": "^8",
     "next": "^14.0.0",
-    "react": "^18.0.0",
+    "react": "^18",
     "react-dom": "^18.0.0",
-    "react^18": "link:@types/react^18",
     "rimraf": "^6.0.1",
     "tsup": "^8.3.0",
     "typescript": "^5"
   },
   "peerDependencies": {
     "next": "^14.0.0",
-    "react": "^18.0.0",
+    "react": "^18",
     "react-dom": "^18.0.0"
   },
   "dependencies": {
