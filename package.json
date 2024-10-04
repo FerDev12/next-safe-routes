@@ -1,5 +1,5 @@
 {
-  "name": "next-safe-routes-2",
+  "name": "next-safe-routes",
   "private": true,
   "scripts": {
     "build": "turbo build",
