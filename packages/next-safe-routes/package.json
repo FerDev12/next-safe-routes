@@ -1,0 +1,48 @@
+{
+  "name": "next-safe-routes",
+  "version": "0.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . -max-warnings 0"
+  },
+  "bin": {
+    "generate-routes": "./dist/cli/generate-routes.js"
+  },
+  "keywords": [],
+  "author": "FerDev12",
+  "license": "MIT",
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "@types/node": "^22",
+    "@types/react-dom": "^18",
+    "@types/yargs": "^17.0.33",
+    "eslint": "^8",
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react^18": "link:@types/react^18",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.3.0",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "yargs": "^17.7.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
