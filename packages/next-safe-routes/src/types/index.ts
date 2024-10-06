@@ -1,13 +1,16 @@
+export type Params = Record<string, string | string[] | undefined>;
+export type Query = Record<string, string>;
+
 export type BaseRoutes = {
   [K: string]: {
-    params?: Record<string, string | string[] | undefined>;
-    query?: { [K: string]: string | undefined };
+    params?: Params;
+    query?: Query;
   };
 };
 
 export type RequiresPathConfig<T> = T extends
-  | { params: Record<string, string | string[]> }
-  | { query: { [K: string]: string } }
+  | { params: Params }
+  | { query: Query }
   ? true
   : false;
 
@@ -17,7 +20,7 @@ export type PathConfig<Routes extends BaseRoutes, Path extends keyof Routes> =
     : [config?: Partial<Routes[Path]>];
 
 export type RouteConfig = {
-  params: Record<string, string | string[] | undefined>;
+  params: Params;
   query?: {
     required?: string[];
     optional?: string[];

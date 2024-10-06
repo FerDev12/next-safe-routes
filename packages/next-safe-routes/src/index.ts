@@ -1,2 +1,2 @@
-export * from '@/lib/navigation';
+export * from '@/navigation';
 export * from '@/types';

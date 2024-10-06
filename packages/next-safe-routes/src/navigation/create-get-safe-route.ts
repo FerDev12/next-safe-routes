@@ -6,7 +6,7 @@ export function createGetSafeRoute<Routes extends BaseRoutes>() {
   return function getRoute<Path extends keyof Routes>(
     pathname: Path,
     ...pathConfig: PathConfig<Routes, Path>
-  ): string {
+  ) {
     const [config] = pathConfig;
 
     if (!config) {

@@ -1,10 +1,7 @@
-// This file is used to generate the Routes type on src/lib/types/routes.ts
-// To run the script type `yarn generate-routes` in your terminal at the root of the project
-
-import { RouteConfig, PageConfig } from '@/types';
 import fs from 'fs';
 import path from 'path';
 import * as ts from 'typescript';
+import { RouteConfig, PageConfig } from '@/types';
 
 function getRoutes(
   dir: string,
@@ -88,7 +85,6 @@ function handleSubDirectory(
   routesMap: Map<string, RouteConfig>
 ) {
   const subRoutes = getRoutes(path.join(dir, entry.name), route, isParallel);
-  // @ts-ignore
   for (const [subRoute, config] of subRoutes) {
     routesMap.set(subRoute, config);
   }
@@ -167,7 +163,6 @@ function mergeRoutes(
   target: Map<string, RouteConfig>,
   source: Map<string, RouteConfig>
 ) {
-  // @ts-ignore
   for (const [route, config] of source) {
     if (target.has(route)) {
       target.set(route, mergeRouteConfigs(target.get(route)!, config));
@@ -208,34 +203,39 @@ function mergeRouteConfigs(
 }
 
 function getPageConfig(filePath: string): PageConfig | undefined {
-  if (!fs.existsSync(filePath)) return undefined;
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const sourceFile = ts.createSourceFile(
+      filePath,
+      fileContent,
+      ts.ScriptTarget.Latest,
+      true
+    );
 
-  const fileContent = fs.readFileSync(filePath, 'utf-8');
-  const sourceFile = ts.createSourceFile(
-    filePath,
-    fileContent,
-    ts.ScriptTarget.Latest,
-    true
-  );
+    let pageConfig: PageConfig | undefined;
 
-  let pageConfig: PageConfig | undefined;
-
-  ts.forEachChild(sourceFile, (node) => {
-    if (ts.isVariableStatement(node)) {
-      const declaration = node.declarationList.declarations[0] as ts.Node;
-      if (
-        ts.isVariableDeclaration(declaration) &&
-        declaration.name.getText() === 'config'
-      ) {
-        const initializer = declaration.initializer;
-        if (initializer && ts.isObjectLiteralExpression(initializer)) {
-          pageConfig = parsePageConfig(initializer);
+    ts.forEachChild(sourceFile, (node) => {
+      if (ts.isVariableStatement(node)) {
+        const declaration = node.declarationList.declarations[0] as ts.Node;
+        if (
+          ts.isVariableDeclaration(declaration) &&
+          declaration.name.getText() === 'config'
+        ) {
+          const initializer = declaration.initializer;
+          if (initializer && ts.isObjectLiteralExpression(initializer)) {
+            pageConfig = parsePageConfig(initializer);
+          }
         }
       }
-    }
-  });
+    });
 
-  return pageConfig;
+    return pageConfig;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      console.error(`Error reading page config file ${filePath}:`, error);
+    }
+    return undefined;
+  }
 }
 
 function parsePageConfig(node: ts.ObjectLiteralExpression): PageConfig {
@@ -282,11 +282,12 @@ function parseSearchParams(
 }
 
 export function generateRoutes(pagesDir: string, outputPath: string) {
-  const routes = getRoutes(pagesDir);
+  try {
+    const routes = getRoutes(pagesDir);
 
-  const modifiedAt = new Date().toISOString();
+    const modifiedAt = new Date().toISOString();
 
-  const routesType = `// This file is auto-generated. Do not edit manually.
+    const routesType = `// This file is auto-generated. Do not edit manually.
 // Modified at ${modifiedAt}
 
 /**
@@ -363,14 +364,11 @@ ${Array.from(routes.entries())
 }
 `;
 
-  if (fs.existsSync(outputPath)) {
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, routesType);
     console.log(`Routes type generated at ${outputPath}`);
-  } else {
-    const lastSlashIndex = outputPath.lastIndexOf('/');
-    const outputDir = outputPath.slice(0, lastSlashIndex);
-    fs.mkdirSync(outputDir, { recursive: true });
-    fs.writeFileSync(outputPath, routesType);
-    console.log(`Routes type generated at ${outputPath}`);
+  } catch (error) {
+    console.error('Error generating routes:', error);
+    throw error;
   }
 }
