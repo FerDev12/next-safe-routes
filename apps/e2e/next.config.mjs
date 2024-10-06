@@ -1,6 +1,4 @@
-import { withNextSafeRoutes } from 'next-safe-routes/plugin';
-
 /** @type {import('next').NextConfig} */
-const nextConfig = withNextSafeRoutes();
+const nextConfig = {};
 
 export default nextConfig;
