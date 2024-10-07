@@ -351,19 +351,9 @@ function parseSearchParams(
   return undefined;
 }
 
-export function generateRoutesWithContext(
-  pagesDir: string,
-  outputPath: string
-) {
-  try {
-    const routes = getRoutes(pagesDir);
-
-    const modifiedAt = new Date().toISOString();
-
-    const routesType = `// This file is auto-generated. Do not edit manually.
-// Modified at ${modifiedAt}
-
-/**
+function generateTypeDefinition() {
+  return `
+    /**
  * Routes Type Definition
  * 
  * This type represents all the routes in the application, with their respective
@@ -408,62 +398,80 @@ export function generateRoutesWithContext(
  * 
  * Note: This file is auto-generated. Do not edit manually.
  */
+  `;
+}
+
+function generateRoute(route: string, config: RouteConfig) {
+  const paramEntries = Object.entries(config.params);
+  const paramsString =
+    paramEntries.length > 0
+      ? `params: { ${paramEntries
+          .map(([key, type]) => `${key}: ${type}`)
+          .join('; ')} };`
+      : '';
+
+  let queryString = '';
+  let contextString = '';
+  let conditionalQueryString = '';
+
+  if (config.parallelRoutes) {
+    const contexts = Object.keys(config.parallelRoutes);
+
+    contextString = `context?: ${contexts.map((ctx) => `'${ctx}'`).join(' | ')};`;
+
+    conditionalQueryString = `} & (
+  ${contexts
+    .map((ctx) => {
+      const parallelConfig = config.parallelRoutes![ctx];
+      const requiredParams = parallelConfig.query?.required || [];
+      const optionalParams = parallelConfig.query?.optional || [];
+      const queryParams = [
+        ...requiredParams.map((param) => `${param}: string`),
+        ...optionalParams.map((param) => `${param}?: string`),
+      ];
+      return `| { context: '${ctx}'; query: Record<string, string>${queryParams.length > 0 ? ` & { ${queryParams.join('; ')} }` : ''} }`;
+    })
+    .join('\n    ')}
+)`;
+  } else {
+    const requiredParams = config.query?.required || [];
+    const optionalParams = config.query?.optional || [];
+    const queryParams = [
+      ...requiredParams.map((param) => `${param}: string`),
+      ...optionalParams.map((param) => `${param}?: string`),
+    ];
+    queryString =
+      queryParams.length > 0
+        ? `query: Record<string, string> & ${`{ ${queryParams.join('; ')} } }`};`
+        : 'query?: Record<string, string> }';
+  }
+
+  return `  '/${route}': {
+  ${paramsString}
+  ${queryString}
+  ${contextString}
+${conditionalQueryString}`;
+}
+
+export function generateRoutesWithContext(
+  pagesDir: string,
+  outputPath: string
+) {
+  try {
+    const routes = getRoutes(pagesDir);
+
+    const modifiedAt = new Date().toISOString();
+
+    const routesType = `// This file is auto-generated. Do not edit manually.
+// Modified at ${modifiedAt}
+
+${generateTypeDefinition()}
 
 export type Routes = {
 ${Array.from(routes.entries())
   .filter(([, config]) => !config.omitFromRoutes)
   .sort(([routeA], [routeB]) => (routeA < routeB ? -1 : 1))
-  .map(([route, config]) => {
-    const paramEntries = Object.entries(config.params);
-    const paramsString =
-      paramEntries.length > 0
-        ? `params: { ${paramEntries
-            .map(([key, type]) => `${key}: ${type}`)
-            .join('; ')} };`
-        : '';
-
-    let queryString = '';
-    let contextString = '';
-    let conditionalQueryString = '';
-
-    if (config.parallelRoutes) {
-      const contexts = Object.keys(config.parallelRoutes);
-
-      contextString = `context?: ${contexts.map((ctx) => `'${ctx}'`).join(' | ')};`;
-
-      conditionalQueryString = `} & (
-    ${contexts
-      .map((ctx) => {
-        const parallelConfig = config.parallelRoutes![ctx];
-        const requiredParams = parallelConfig.query?.required || [];
-        const optionalParams = parallelConfig.query?.optional || [];
-        const queryParams = [
-          ...requiredParams.map((param) => `${param}: string`),
-          ...optionalParams.map((param) => `${param}?: string`),
-        ];
-        return `| { context: '${ctx}'; query: Record<string, string>${queryParams.length > 0 ? ` & { ${queryParams.join('; ')} }` : ''} }`;
-      })
-      .join('\n    ')}
-  )`;
-    } else {
-      const requiredParams = config.query?.required || [];
-      const optionalParams = config.query?.optional || [];
-      const queryParams = [
-        ...requiredParams.map((param) => `${param}: string`),
-        ...optionalParams.map((param) => `${param}?: string`),
-      ];
-      queryString =
-        queryParams.length > 0
-          ? `query: Record<string, string> & ${`{ ${queryParams.join('; ')} } }`};`
-          : 'query?: Record<string, string> }';
-    }
-
-    return `  '/${route}': {
-    ${paramsString}
-    ${queryString}
-    ${contextString}
-  ${conditionalQueryString}`;
-  })
+  .map(([route, config]) => generateRoute(route, config))
   .join(';\n')}
 };
 `;
