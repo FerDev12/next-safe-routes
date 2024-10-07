@@ -60,6 +60,9 @@ importers:
       next:
         specifier: 14.2.14
         version: 14.2.14(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next-safe-routes:
+        specifier: workspace:*
+        version: link:../../packages/next-safe-routes
       react:
         specifier: ^18
         version: 18.3.1
@@ -125,9 +128,6 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/eslint':
         specifier: ^8
         version: 8.56.5
@@ -160,12 +160,10 @@ importers:
         version: 6.0.1
       tsup:
         specifier: ^8.3.0
-        version: 8.3.0(jiti@1.21.6)(postcss@8.4.31)(typescript@5.4.5)(yaml@2.5.1)
+        version: 8.3.0(jiti@1.21.6)(postcss@8.4.47)(typescript@5.4.5)(yaml@2.5.1)
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
-
-  packages/typescript-config: {}
 
 packages:
 
@@ -2291,6 +2289,10 @@ packages:
     resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
     engines: {node: ^10 || ^12 || >=14}
 
+  postcss@8.4.47:
+    resolution: {integrity: sha512-56rxCq7G/XfB4EkXq9Egn5GCqugWvDFjafDOThIdMBsI15iqPqR5r15TfSr1YPYeEI19YeaXMCbY6u88Y76GLQ==}
+    engines: {node: ^10 || ^12 || >=14}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -2482,6 +2484,10 @@ packages:
 
   source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
+    engines: {node: '>=0.10.0'}
+
+  source-map-js@1.2.1:
+    resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
   source-map@0.8.0-beta.0:
@@ -5261,12 +5267,12 @@ snapshots:
     optionalDependencies:
       postcss: 8.4.31
 
-  postcss-load-config@6.0.1(jiti@1.21.6)(postcss@8.4.31)(yaml@2.5.1):
+  postcss-load-config@6.0.1(jiti@1.21.6)(postcss@8.4.47)(yaml@2.5.1):
     dependencies:
       lilconfig: 3.1.2
     optionalDependencies:
       jiti: 1.21.6
-      postcss: 8.4.31
+      postcss: 8.4.47
       yaml: 2.5.1
 
   postcss-nested@6.2.0(postcss@8.4.31):
@@ -5286,6 +5292,13 @@ snapshots:
       nanoid: 3.3.7
       picocolors: 1.1.0
       source-map-js: 1.0.2
+
+  postcss@8.4.47:
+    dependencies:
+      nanoid: 3.3.7
+      picocolors: 1.1.0
+      source-map-js: 1.2.1
+    optional: true
 
   prelude-ls@1.2.1: {}
 
@@ -5502,6 +5515,9 @@ snapshots:
 
   source-map-js@1.0.2: {}
 
+  source-map-js@1.2.1:
+    optional: true
+
   source-map@0.8.0-beta.0:
     dependencies:
       whatwg-url: 7.1.0
@@ -5693,7 +5709,7 @@ snapshots:
 
   tslib@2.6.2: {}
 
-  tsup@8.3.0(jiti@1.21.6)(postcss@8.4.31)(typescript@5.4.5)(yaml@2.5.1):
+  tsup@8.3.0(jiti@1.21.6)(postcss@8.4.47)(typescript@5.4.5)(yaml@2.5.1):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.1)
       cac: 6.7.14
@@ -5704,7 +5720,7 @@ snapshots:
       execa: 5.1.1
       joycon: 3.1.1
       picocolors: 1.1.0
-      postcss-load-config: 6.0.1(jiti@1.21.6)(postcss@8.4.31)(yaml@2.5.1)
+      postcss-load-config: 6.0.1(jiti@1.21.6)(postcss@8.4.47)(yaml@2.5.1)
       resolve-from: 5.0.0
       rollup: 4.24.0
       source-map: 0.8.0-beta.0
@@ -5712,7 +5728,7 @@ snapshots:
       tinyglobby: 0.2.9
       tree-kill: 1.2.2
     optionalDependencies:
-      postcss: 8.4.31
+      postcss: 8.4.47
       typescript: 5.4.5
     transitivePeerDependencies:
       - jiti

@@ -30,35 +30,9 @@ export type RequiresContextConfig<T> = T extends {
 export type RequiresPathConfig<T> = T extends
   | { params: Params }
   | { query: Query }
+  | { context: string }
   ? true
   : false;
-
-export type ParamsConfig<
-  Routes extends BaseRoutes,
-  Path extends keyof Routes,
-  Params extends Routes[Path]['params'],
-> =
-  RequiresParamsConfig<Routes[Path]> extends true
-    ? { params: Params }
-    : { params?: Params };
-
-export type QueryConfig<
-  Routes extends BaseRoutes,
-  Path extends keyof Routes,
-  Query extends Routes[Path]['query'],
-> =
-  RequiresQueryConfig<Routes[Path]> extends true
-    ? { query: Query }
-    : { query?: Query };
-
-export type ContextConfig<
-  Routes extends BaseRoutes,
-  Path extends keyof Routes,
-  Context extends Routes[Path]['context'],
-> =
-  RequiresContextConfig<Routes[Path]> extends true
-    ? { context: Context }
-    : { context?: Context };
 
 export type PathConfig<Routes extends BaseRoutes, Path extends keyof Routes> =
   RequiresPathConfig<Routes[Path]> extends true

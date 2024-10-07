@@ -4,28 +4,29 @@ import { NextConfig } from 'next';
 import { generateRoutes } from '@/core';
 import { isUsingSrcDirectory } from '@/utils/is-using-src-directory';
 import { getFullOuptutPath } from '@/utils/get-output-path';
+import { logger } from '@/utils/logger';
 
 interface SafeRoutesConfig {
   outPath?: string;
   verbose?: boolean;
 }
 
+const cache = new Map<string, boolean>();
+
 function buildRoutes(pagesDir: string, outPath: string, verbose: boolean) {
   if (verbose) {
-    console.log(`Generating routes from ${pagesDir} for this build`);
-    console.log(`Output file: ${outPath}`);
+    logger.info(`Generating routes from ${pagesDir} for this build`);
+    logger.info(`Output file: ${outPath}`);
   }
 
   try {
     generateRoutes(pagesDir, outPath);
-    console.log('Routes generated successfully for this build.');
+    logger.info('Routes generated successfully for this build.');
   } catch (error: any) {
-    console.error('Error generating routes for this build', error);
+    logger.error('Error generating routes for this build', error);
     throw error;
   }
 }
-
-const cache = new Map<string, boolean>();
 
 export function withNextSafeRoutes(
   nextConfig: NextConfig = {},
@@ -40,13 +41,9 @@ export function withNextSafeRoutes(
     ...nextConfig,
   };
 
-  nextSafeRoutesConfig.webpack = function (
-    ...[config, options]: Parameters<NonNullable<NextConfig['webpack']>>
-  ) {
-    const { isServer, buildId } = options;
-
-    if (isServer && !cache.has(buildId)) {
-      // Generate routes only if they haven't been generated in this build
+  // Function to generate routes
+  const generateSafeRoutes = (buildId: string) => {
+    if (!cache.has(buildId)) {
       const useSrcDir = isUsingSrcDirectory();
       const rootDir = process.cwd();
       const srcDir = useSrcDir ? 'src' : '';
@@ -54,28 +51,47 @@ export function withNextSafeRoutes(
       const outputPath = getFullOuptutPath(outPath, useSrcDir);
 
       if (verbose) {
-        console.log(`Next Safe Routes`);
-        console.log('Verbose mode enabled');
-        console.log('Current working directory:', rootDir);
-        console.log('Using src directory:', useSrcDir);
+        logger.info('Verbose mode enabled');
+        logger.info('Current working directory:', rootDir);
+        logger.info('Using src directory:', useSrcDir);
       }
 
       if (!fs.existsSync(pagesDir)) {
-        throw new Error(
-          `Next Safe Routes Error: The directory ${pagesDir} does not exist`
-        );
+        throw new Error(`The directory ${pagesDir} does not exist`);
       }
 
       buildRoutes(pagesDir, outputPath, verbose);
       cache.set(buildId, true);
     }
-
-    if (typeof nextConfig.webpack === 'function') {
-      return nextConfig.webpack(config, options);
-    }
-
-    return config;
   };
+
+  // eslint-disable-next-line turbo/no-undeclared-env-vars
+  const useTurbo = process.env.TURBOPACK === '1';
+
+  if (!useTurbo) {
+    nextSafeRoutesConfig.webpack = function (
+      ...[config, options]: Parameters<NonNullable<NextConfig['webpack']>>
+    ) {
+      const { isServer, buildId } = options;
+
+      if (isServer) {
+        generateSafeRoutes(buildId);
+      }
+
+      if (typeof nextConfig.webpack === 'function') {
+        return nextConfig.webpack(config, options);
+      }
+
+      return config;
+    };
+  } else {
+    logger.warn('Turbopack is not yet supported.');
+    if (verbose) {
+      logger.info(
+        'To generate routes while using turbopack either run your projects build command or use the cli tool.'
+      );
+    }
+  }
 
   return nextSafeRoutesConfig;
 }

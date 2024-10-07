@@ -54,7 +54,6 @@
   "license": "MIT",
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
     "@types/eslint": "^8",
     "@types/node": "^20",
     "@types/react": "^18.3.11",
