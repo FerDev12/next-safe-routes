@@ -17,6 +17,12 @@ export type RequiresQueryConfig<T> = T extends {
   ? true
   : false;
 
+export type RequiresContextConfig<T> = T extends {
+  context: string;
+}
+  ? true
+  : false;
+
 export type ParamsConfig<
   Routes extends BaseRoutes,
   Path extends keyof Routes,
@@ -35,11 +41,21 @@ export type QueryConfig<
     ? { query: Query }
     : { query?: Query };
 
+export type ContextConfig<
+  Routes extends BaseRoutes,
+  Path extends keyof Routes,
+  Context extends Routes[Path]['context'],
+> =
+  RequiresContextConfig<Routes[Path]> extends true
+    ? { context: Context }
+    : { context?: Context };
+
 export type Href<Routes extends BaseRoutes, Path extends keyof Routes> = {
   href: {
     pathname: Path;
   } & ParamsConfig<Routes, Path, Routes[Path]['params']> &
-    QueryConfig<Routes, Path, Routes[Path]['query']>;
+    QueryConfig<Routes, Path, Routes[Path]['query']> &
+    ContextConfig<Routes, Path, Routes[Path]['context']>;
 };
 
 export type SafeLinkProps<
@@ -71,6 +87,10 @@ export function createSafeLink<Routes extends BaseRoutes>() {
 
         if (href.query) {
           config.query = href.query;
+        }
+
+        if (href.context) {
+          config.context = href.context;
         }
 
         try {

@@ -14,7 +14,8 @@
     "lint": "eslint . -max-warnings 0"
   },
   "bin": {
-    "generate-routes": "./dist/cli/index.js"
+    "generate-routes": "./dist/cli/index.js",
+    "generate-routes-with-context": "./dist/cli/generate-routes-with-context.js"
   },
   "exports": {
     ".": {

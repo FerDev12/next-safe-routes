@@ -5,6 +5,7 @@ export type BaseRoutes = {
   [K: string]: {
     params?: Params;
     query?: Query;
+    context?: string;
   };
 };
 
