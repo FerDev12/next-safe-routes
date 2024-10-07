@@ -54,7 +54,7 @@ yargs(hideBin(process.argv))
 
     async (argv) => {
       const rootDir = process.cwd();
-      const useSrcDir = await isUsingSrcDirectory();
+      const useSrcDir = isUsingSrcDirectory();
       const srcDir = useSrcDir ? 'src' : '';
       const pagesDir = path.join(rootDir, srcDir, 'app');
       const fullOutPath = getFullOuptutPath(argv.outPath!, useSrcDir);

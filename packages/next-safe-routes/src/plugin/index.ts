@@ -1,6 +1,7 @@
+import fs from 'fs';
+import path from 'path';
 import { NextConfig } from 'next';
 import { generateRoutes } from '@/core';
-import path from 'path';
 import { isUsingSrcDirectory } from '@/utils/is-using-src-directory';
 import { getFullOuptutPath } from '@/utils/get-output-path';
 
@@ -20,6 +21,7 @@ function buildRoutes(pagesDir: string, outPath: string, verbose: boolean) {
     console.log('Routes generated successfully for this build.');
   } catch (error: any) {
     console.error('Error generating routes for this build', error);
+    throw error;
   }
 }
 
@@ -48,9 +50,23 @@ export function withNextSafeRoutes(
       const useSrcDir = isUsingSrcDirectory();
       const rootDir = process.cwd();
       const srcDir = useSrcDir ? 'src' : '';
-      const fullPagesDir = path.join(rootDir, srcDir, 'app');
-      const fullOutputPath = getFullOuptutPath(outPath, useSrcDir);
-      buildRoutes(fullPagesDir, fullOutputPath, verbose);
+      const pagesDir = path.join(rootDir, srcDir, 'app');
+      const outputPath = getFullOuptutPath(outPath, useSrcDir);
+
+      if (verbose) {
+        console.log(`Next Safe Routes`);
+        console.log('Verbose mode enabled');
+        console.log('Current working directory:', rootDir);
+        console.log('Using src directory:', useSrcDir);
+      }
+
+      if (!fs.existsSync(pagesDir)) {
+        throw new Error(
+          `Next Safe Routes Error: The directory ${pagesDir} does not exist`
+        );
+      }
+
+      buildRoutes(pagesDir, outputPath, verbose);
       cache.set(buildId, true);
     }
 
