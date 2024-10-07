@@ -1,11 +1,11 @@
 // src/create-get-route.ts
 
-import { BaseRoutes, PathConfig } from '@/types';
+import { BaseRoutes, SpreadablePathConfig } from '@/types';
 
 export function createGetSafeRoute<Routes extends BaseRoutes>() {
   return function getRoute<Path extends keyof Routes>(
     pathname: Path,
-    ...pathConfig: PathConfig<Routes, Path>
+    ...pathConfig: SpreadablePathConfig<Routes, Path>
   ) {
     const [config] = pathConfig;
 

@@ -11,11 +11,11 @@
   "scripts": {
     "build": "rimraf ./dist && tsup",
     "dev": "tsup --watch",
-    "lint": "eslint . -max-warnings 0"
+    "lint": "eslint . -max-warnings 0",
+    "test": "vitest"
   },
   "bin": {
-    "generate-routes": "./dist/cli/index.js",
-    "generate-routes-with-context": "./dist/cli/generate-routes-with-context.js"
+    "generate-routes": "./dist/cli/index.js"
   },
   "exports": {
     ".": {

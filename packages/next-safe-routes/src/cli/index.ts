@@ -5,14 +5,30 @@ import path from 'path';
 import fs from 'fs';
 import yargs, { Arguments, CommandBuilder } from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { generateRoutes } from '@/core';
 import { isUsingSrcDirectory } from '@/utils/is-using-src-directory';
 import { getFullOuptutPath } from '@/utils/get-output-path';
+import { generateRoutes } from '@/core';
 
 type RouteOptions = Arguments & {
   outPath?: string;
   verbose?: boolean;
 };
+
+export function buildRoutes(
+  pagesDir: string,
+  outPath: string,
+  verbose: boolean
+) {
+  try {
+    if (verbose) {
+      console.log(`Generating routes from ${pagesDir}`);
+      console.log(`Output file: ${outPath}`);
+    }
+    generateRoutes(pagesDir, outPath);
+  } catch (error: any) {
+    console.error('Error generating routes:', error);
+  }
+}
 
 const builder: CommandBuilder<RouteOptions, RouteOptions> = (yargs) => {
   return yargs
@@ -29,18 +45,6 @@ const builder: CommandBuilder<RouteOptions, RouteOptions> = (yargs) => {
       default: false,
     });
 };
-
-function buildRoutes(pagesDir: string, outPath: string, verbose: boolean) {
-  try {
-    if (verbose) {
-      console.log(`Generating routes from ${pagesDir}`);
-      console.log(`Output file: ${outPath}`);
-    }
-    generateRoutes(pagesDir, outPath);
-  } catch (error: any) {
-    console.error('Error generating routes:', error);
-  }
-}
 
 yargs(hideBin(process.argv))
   .command(

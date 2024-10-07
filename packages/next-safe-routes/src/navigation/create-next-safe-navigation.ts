@@ -1,4 +1,4 @@
-import { BaseRoutes, PathConfig } from '@/types';
+import { BaseRoutes, SpreadablePathConfig } from '@/types';
 import {
   createUseSafeRouter,
   SafeRouterInstance,
@@ -12,7 +12,7 @@ type CreateSafeNavigationReturnType<Routes extends BaseRoutes> = {
     // eslint-disable-next-line no-unused-vars
     pathname: Path,
     // eslint-disable-next-line no-unused-vars
-    ...pathConfig: PathConfig<Routes, Path>
+    ...pathConfig: SpreadablePathConfig<Routes, Path>
   ) => string;
   useRouter: () => SafeRouterInstance<Routes>;
   redirect: SafeRedirect<Routes>;

@@ -2,60 +2,34 @@
 
 import React, { forwardRef, Ref, useMemo } from 'react';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
-import { BaseRoutes, Params, PathConfig, Query } from '@/types';
+import { BaseRoutes, ParamsConfig, PathConfig, Query } from '@/types';
 import { createGetSafeRoute } from './create-get-safe-route';
 
-export type RequiresParamsConfig<T> = T extends {
-  params: Params;
-}
+export type RequiresContextQueryConfig<T> = T extends
+  | {
+      context: string;
+      query?: Query;
+    }
+  | {
+      context: string;
+      query: Query;
+    }
   ? true
   : false;
 
-export type RequiresQueryConfig<T> = T extends {
-  query: Query;
-}
-  ? true
-  : false;
-
-export type RequiresContextConfig<T> = T extends {
-  context: string;
-}
-  ? true
-  : false;
-
-export type ParamsConfig<
+export type ContextQueryConfig<
   Routes extends BaseRoutes,
   Path extends keyof Routes,
-  Params extends Routes[Path]['params'],
-> =
-  RequiresParamsConfig<Routes[Path]> extends true
-    ? { params: Params }
-    : { params?: Params };
-
-export type QueryConfig<
-  Routes extends BaseRoutes,
-  Path extends keyof Routes,
-  Query extends Routes[Path]['query'],
-> =
-  RequiresQueryConfig<Routes[Path]> extends true
-    ? { query: Query }
-    : { query?: Query };
-
-export type ContextConfig<
-  Routes extends BaseRoutes,
-  Path extends keyof Routes,
-  Context extends Routes[Path]['context'],
-> =
-  RequiresContextConfig<Routes[Path]> extends true
-    ? { context: Context }
-    : { context?: Context };
+  Config extends Routes[Path],
+> = Omit<Config, 'params'>;
 
 export type Href<Routes extends BaseRoutes, Path extends keyof Routes> = {
-  href: {
-    pathname: Path;
-  } & ParamsConfig<Routes, Path, Routes[Path]['params']> &
-    QueryConfig<Routes, Path, Routes[Path]['query']> &
-    ContextConfig<Routes, Path, Routes[Path]['context']>;
+  href:
+    | ({
+        pathname: Path;
+      } & ParamsConfig<Routes, Path, Routes[Path]['params']> &
+        ContextQueryConfig<Routes, Path, Routes[Path]>)
+    | string;
 };
 
 export type SafeLinkProps<
@@ -79,7 +53,9 @@ export function createSafeLink<Routes extends BaseRoutes>() {
       ref: Ref<HTMLAnchorElement>
     ) => {
       const parsedHref = useMemo(() => {
-        const config: PathConfig<Routes, Path>[0] = {};
+        if (typeof href === 'string') return href;
+
+        const config: Partial<PathConfig<Routes, Path>> = {};
 
         if (href.params) {
           config.params = href.params;
@@ -89,13 +65,15 @@ export function createSafeLink<Routes extends BaseRoutes>() {
           config.query = href.query;
         }
 
-        if (href.context) {
-          config.context = href.context;
+        if ('context' in href && href.context) {
+          config.context = href.context as Routes[Path]['context'];
         }
 
         try {
-          // @ts-ignore
-          return getRouteSingleton(href.pathname as Path, config);
+          return getRouteSingleton(
+            href.pathname as Path,
+            config as PathConfig<Routes, Path>
+          );
         } catch (err: unknown) {
           console.error('Error, failed to generate route:', err);
           // Prevent runtime errors
@@ -103,7 +81,13 @@ export function createSafeLink<Routes extends BaseRoutes>() {
         }
       }, [href]);
 
-      return <NextLink ref={ref} href={parsedHref} {...props} />;
+      return (
+        <NextLink
+          ref={ref}
+          href={typeof href === 'string' ? href : parsedHref}
+          {...props}
+        />
+      );
     }
   );
 

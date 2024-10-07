@@ -1,12 +1,31 @@
 import fs from 'fs';
 import path from 'path';
 import * as ts from 'typescript';
-import { RouteConfig, PageConfig } from '@/types';
+import { Params, PageConfig } from '@/types';
+
+type ParallelRouteConfig = {
+  params: Params;
+  query?: {
+    required?: string[];
+    optional?: string[];
+  };
+  omitFromRoutes?: boolean;
+};
+
+type RouteConfig = {
+  params: Params;
+  query?: {
+    required?: string[];
+    optional?: string[];
+  };
+  omitFromRoutes?: boolean;
+  parallelRoutes?: Record<string, ParallelRouteConfig>;
+};
 
 function getRoutes(
   dir: string,
   baseRoute: string = '',
-  isParallel: boolean = false
+  parallelContext: string = ''
 ): Map<string, RouteConfig> {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const routesMap = new Map<string, RouteConfig>();
@@ -17,13 +36,13 @@ function getRoutes(
     let route = path.join(baseRoute, entry.name);
 
     if (isRouteGroup(entry)) {
-      handleRouteGroup(dir, entry, baseRoute, isParallel, routesMap);
+      handleRouteGroup(dir, entry, baseRoute, parallelContext, routesMap);
     } else if (isParallelRoute(entry)) {
       handleParallelRoute(dir, entry, baseRoute, routesMap);
     } else if (entry.isDirectory()) {
-      handleSubDirectory(dir, entry, route, isParallel, routesMap);
+      handleSubDirectory(dir, entry, route, parallelContext, routesMap);
     } else if (isPageFile(entry)) {
-      handlePageFile(dir, entry, baseRoute, routesMap);
+      handlePageFile(dir, entry, baseRoute, parallelContext, routesMap);
     }
   }
 
@@ -56,13 +75,13 @@ function handleRouteGroup(
   dir: string,
   entry: fs.Dirent,
   baseRoute: string,
-  isParallel: boolean,
+  parallelContext: string,
   routesMap: Map<string, RouteConfig>
 ) {
   const subRoutes = getRoutes(
     path.join(dir, entry.name),
     baseRoute,
-    isParallel
+    parallelContext
   );
   mergeRoutes(routesMap, subRoutes);
 }
@@ -73,27 +92,31 @@ function handleParallelRoute(
   baseRoute: string,
   routesMap: Map<string, RouteConfig>
 ) {
-  const subRoutes = getRoutes(path.join(dir, entry.name), baseRoute, true);
-  mergeRoutes(routesMap, subRoutes);
+  const context = entry.name.slice(1);
+  const subRoutes = getRoutes(path.join(dir, entry.name), baseRoute, context);
+  mergeParallelRoutes(routesMap, subRoutes, context);
 }
 
 function handleSubDirectory(
   dir: string,
   entry: fs.Dirent,
   route: string,
-  isParallel: boolean,
+  parallelContext: string,
   routesMap: Map<string, RouteConfig>
 ) {
-  const subRoutes = getRoutes(path.join(dir, entry.name), route, isParallel);
-  for (const [subRoute, config] of subRoutes) {
-    routesMap.set(subRoute, config);
-  }
+  const subRoutes = getRoutes(
+    path.join(dir, entry.name),
+    route,
+    parallelContext
+  );
+  mergeRoutes(routesMap, subRoutes);
 }
 
 function handlePageFile(
   dir: string,
   entry: fs.Dirent,
   baseRoute: string,
+  parallelContext: string,
   routesMap: Map<string, RouteConfig>
 ) {
   const routePath = normalizeRoutePath(baseRoute);
@@ -106,11 +129,18 @@ function handlePageFile(
 
   const config: RouteConfig = {
     params,
+    query: pageConfig?.searchParams,
     omitFromRoutes: pageConfig?.omitFromRoutes,
   };
 
-  if (pageConfig?.searchParams) {
-    config.query = pageConfig.searchParams;
+  if (parallelContext) {
+    config.parallelRoutes = {
+      [parallelContext]: {
+        params,
+        query: pageConfig?.searchParams,
+        omitFromRoutes: pageConfig?.omitFromRoutes,
+      },
+    };
   }
 
   if (routesMap.has(routePath)) {
@@ -126,15 +156,13 @@ function handlePageFile(
 function normalizeRoutePath(route: string): string {
   return route
     .replace(/\\/g, '/')
-    .replace(/\[\[\.\.\.(\w+)\]\]/g, '[[...$1]]') // Preserve optional catch-all syntax
-    .replace(/\[\.\.\.(\w+)\]/g, '[...$1]') // Preserve catch-all syntax
+    .replace(/\[\[\.\.\.(\w+)\]\]/g, '[[...$1]]')
+    .replace(/\[\.\.\.(\w+)\]/g, '[...$1]')
     .replace(/\[([^\]]+)\]/g, '[$1]');
 }
 
-function getRouteParams(
-  routePath: string
-): Record<string, string | string[] | undefined> {
-  const params: Record<string, string | string[] | undefined> = {};
+function getRouteParams(routePath: string): Params {
+  const params: Params = {};
   const segments = routePath.split('/');
 
   segments.forEach((segment) => {
@@ -142,15 +170,12 @@ function getRouteParams(
       let paramName = segment.slice(1, -1);
 
       if (paramName.startsWith('...')) {
-        // Catch-all route
         paramName = paramName.slice(3);
         params[paramName] = 'string[]';
       } else if (paramName.startsWith('[...') && paramName.endsWith(']')) {
-        // Optional catch-all route
         paramName = paramName.slice(4, -1);
         params[paramName] = 'string[] | undefined';
       } else {
-        // Regular dynamic route
         params[paramName] = 'string';
       }
     }
@@ -172,34 +197,80 @@ function mergeRoutes(
   }
 }
 
+function mergeParallelRoutes(
+  target: Map<string, RouteConfig>,
+  source: Map<string, RouteConfig>,
+  context: string
+) {
+  for (const [route, config] of source) {
+    if (target.has(route)) {
+      const existingConfig = target.get(route)!;
+      existingConfig.parallelRoutes = existingConfig.parallelRoutes || {};
+      existingConfig.parallelRoutes[context] = {
+        params: config.params,
+        query: config.query,
+        omitFromRoutes: config.omitFromRoutes,
+      };
+      target.set(route, existingConfig);
+    } else {
+      const newConfig: RouteConfig = {
+        params: config.params,
+        parallelRoutes: {
+          [context]: {
+            params: config.params,
+            query: config.query,
+            omitFromRoutes: config.omitFromRoutes,
+          },
+        },
+      };
+      target.set(route, newConfig);
+    }
+  }
+}
+
 function mergeRouteConfigs(
   existing: RouteConfig,
   newConfig: RouteConfig
 ): RouteConfig {
-  let query: string[] = [];
-  if (!existing.omitFromRoutes) {
-    query = Array.from(
-      new Set([
-        ...query,
-        ...(existing.query?.required ?? []),
-        ...(existing.query?.optional ?? []),
-      ])
-    );
-  }
-  if (!newConfig.omitFromRoutes) {
-    query = Array.from(
-      new Set([
-        ...query,
-        ...(newConfig.query?.required ?? []),
-        ...(newConfig.query?.optional ?? []),
-      ])
-    );
-  }
-  return {
+  const mergedConfig: RouteConfig = {
     params: { ...existing.params, ...newConfig.params },
-    query: query.length > 0 ? { optional: query } : undefined,
     omitFromRoutes: existing.omitFromRoutes && newConfig.omitFromRoutes,
   };
+
+  if (existing.query || newConfig.query) {
+    mergedConfig.query = {
+      required: Array.from(
+        new Set([
+          ...(existing.query?.required ?? []),
+          ...(newConfig.query?.required ?? []),
+        ])
+      ),
+      optional: Array.from(
+        new Set([
+          ...(existing.query?.optional ?? []),
+          ...(newConfig.query?.optional ?? []),
+        ])
+      ),
+    };
+  }
+
+  if (existing.parallelRoutes || newConfig.parallelRoutes) {
+    mergedConfig.parallelRoutes = { ...existing.parallelRoutes };
+    for (const [context, config] of Object.entries(
+      newConfig.parallelRoutes ?? {}
+    )) {
+      if (mergedConfig.parallelRoutes[context]) {
+        mergedConfig.parallelRoutes[context] = mergeRouteConfigs(
+          mergedConfig.parallelRoutes[context],
+          config
+        ) as ParallelRouteConfig;
+      } else {
+        mergedConfig.parallelRoutes[context] = config;
+      }
+    }
+  }
+
+  return mergedConfig;
 }
 
 function getPageConfig(filePath: string): PageConfig | undefined {
@@ -250,7 +321,6 @@ function parsePageConfig(node: ts.ObjectLiteralExpression): PageConfig {
         pageConfig.omitFromRoutes =
           (prop.initializer as ts.Expression).getText() === 'true';
       }
-      // Future configurations can be parsed here
     }
   });
 
@@ -281,15 +351,8 @@ function parseSearchParams(
   return undefined;
 }
 
-export function generateRoutes(pagesDir: string, outputPath: string) {
-  try {
-    const routes = getRoutes(pagesDir);
-
-    const modifiedAt = new Date().toISOString();
-
-    const routesType = `// This file is auto-generated. Do not edit manually.
-// Modified at ${modifiedAt}
-
+function generateTypeDefinition() {
+  return `
 /**
  * Routes Type Definition
  * 
@@ -298,7 +361,8 @@ export function generateRoutes(pagesDir: string, outputPath: string) {
  * configurations are merged according to the following rules:
  * - If one route has omitFromRoutes = true, its configuration is not merged
  * - If all parallel routes have omitFromRoutes = true, the route is not included
- * - When merging query parameters, all parameters become optional
+ * - All query parameters are optional at the top level
+ * - When a context is selected, its specific query parameters become required
  * 
  * Structure:
  * - Each key is a route path (e.g., '/users/[id]')
@@ -310,16 +374,22 @@ export function generateRoutes(pagesDir: string, outputPath: string) {
  *   - query: An object representing query parameters
  *     - Always includes Record<string, string> to allow for any string key-value pairs
  *     - All specific query parameters are optional (key?: string)
- *     - Note: Some query parameters might be required in specific contexts, even though they're typed as optional
+ *   - context?: For parallel routes, an optional property that, when specified, 
+ *               makes certain query parameters required based on the selected context
  * 
  * Example:
- * '/users/[id]': {
- *   params: { id: string },
+ * '/products': {
  *   query: Record<string, string> & { 
- *     sort?: string,
- *     filter?: string
- *   }
- * }
+ *     color?: string,
+ *     size?: string,
+ *     brand?: string,
+ *     material?: string
+ *   },
+ *   context?: 'tshirts' | 'pants'
+ * } & (
+ *   | { context: 'tshirts', query: { color: string, size: string } }
+ *   | { context: 'pants', query: { brand: string, material?: string } }
+ * )
  * 
  * Usage:
  * - Use the Routes type for type-safe routing in your application
@@ -327,41 +397,77 @@ export function generateRoutes(pagesDir: string, outputPath: string) {
  * - Additional query parameters can be added freely due to Record<string, string>
  * 
  * Note: This file is auto-generated. Do not edit manually.
- */
+ */`;
+}
+
+function generateRoute(route: string, config: RouteConfig) {
+  const paramEntries = Object.entries(config.params);
+  const paramsString =
+    paramEntries.length > 0
+      ? `params: { ${paramEntries
+          .map(([key, type]) => `${key}: ${type}`)
+          .join('; ')} };`
+      : '';
+
+  let queryString = '';
+  let contextString = '';
+  let conditionalQueryString = '';
+
+  if (config.parallelRoutes) {
+    const contexts = Object.keys(config.parallelRoutes);
+
+    contextString = `context: ${contexts.map((ctx) => `'${ctx}'`).join(' | ')};`;
+
+    conditionalQueryString = `} & (
+  ${contexts
+    .map((ctx) => {
+      const parallelConfig = config.parallelRoutes![ctx];
+      const requiredParams = parallelConfig.query?.required || [];
+      const optionalParams = parallelConfig.query?.optional || [];
+      const queryParams = [
+        ...requiredParams.map((param) => `${param}: string`),
+        ...optionalParams.map((param) => `${param}?: string`),
+      ];
+      return `| { context: '${ctx}'; query: Record<string, string>${queryParams.length > 0 ? ` & { ${queryParams.join('; ')} }` : ''} }`;
+    })
+    .join('\n    ')}
+)`;
+  } else {
+    const requiredParams = config.query?.required || [];
+    const optionalParams = config.query?.optional || [];
+    const queryParams = [
+      ...requiredParams.map((param) => `${param}: string`),
+      ...optionalParams.map((param) => `${param}?: string`),
+    ];
+    queryString =
+      queryParams.length > 0
+        ? `query: Record<string, string> & ${`{ ${queryParams.join('; ')} } }`};`
+        : 'query?: Record<string, string> }';
+  }
+
+  return `  '/${route}': {${paramsString}${queryString}${contextString}${conditionalQueryString}`;
+}
+
+export function generateRoutes(pagesDir: string, outputPath: string) {
+  try {
+    const routes = getRoutes(pagesDir);
+
+    const modifiedAt = new Date().toISOString();
+
+    const routesType = `// This file is auto-generated. Do not edit manually.
+// Modified at ${modifiedAt}
+
+${generateTypeDefinition()}
 
 export type Routes = {
 ${Array.from(routes.entries())
   .filter(([, config]) => !config.omitFromRoutes)
   .sort(([routeA], [routeB]) => (routeA < routeB ? -1 : 1))
-  .map(([route, config]) => {
-    const paramEntries = Object.entries(config.params);
-    const paramsString =
-      paramEntries.length > 0
-        ? `params: { ${paramEntries
-            .map(([key, type]) => `${key}: ${type}`)
-            .join(', ')} }, `
-        : '';
-    const queryString = `query${config.query ? '' : '?'}: Record<string, string>
-    ${
-      config.query
-        ? ` & { ${
-            config.query?.required
-              ? `${config.query.required
-                  .map((q) => `${q}: string`)
-                  .join(', ')}, `
-              : ''
-          }
-    ${
-      config.query.optional
-        ? `${config.query.optional.map((q) => `${q}?: string`).join(', ')}`
-        : ''
-    } }`
-        : ''
-    }, `;
-    return `  '/${route}': { ${paramsString}${queryString} }`;
-  })
-  .join(',\n')}
-}
+  .map(([route, config]) => generateRoute(route, config))
+  .join(';\n')}
+};
+
+export type Path = keyof Routes
 `;
 
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });

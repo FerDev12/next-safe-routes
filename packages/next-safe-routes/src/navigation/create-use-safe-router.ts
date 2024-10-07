@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { BaseRoutes, PathConfig } from '@/types';
+import { BaseRoutes, PathConfig, SpreadablePathConfig } from '@/types';
 import { createGetSafeRoute } from './create-get-safe-route';
 import { deepFreeze } from '@/utils/deep-freeze';
 import { AppRouterInstance as NextAppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
@@ -15,19 +15,19 @@ export type SafeRouterInstance<Routes extends BaseRoutes> = Omit<
     // eslint-disable-next-line no-unused-vars
     pathname: Path,
     // eslint-disable-next-line no-unused-vars
-    ...pathConfig: PathConfig<Routes, Path>
+    ...pathConfig: SpreadablePathConfig<Routes, Path>
   ) => ReturnType<AppRouterInstance['prefetch']>;
   push: <Path extends keyof Routes>(
     // eslint-disable-next-line no-unused-vars
     pathname: Path,
     // eslint-disable-next-line no-unused-vars
-    ...pathConfig: PathConfig<Routes, Path>
+    ...pathConfig: SpreadablePathConfig<Routes, Path>
   ) => ReturnType<AppRouterInstance['push']>;
   replace: <Path extends keyof Routes>(
     // eslint-disable-next-line no-unused-vars
     pathname: Path,
     // eslint-disable-next-line no-unused-vars
-    ...pathConfig: PathConfig<Routes, Path>
+    ...pathConfig: SpreadablePathConfig<Routes, Path>
   ) => ReturnType<AppRouterInstance['replace']>;
 };
 
@@ -38,11 +38,15 @@ function createTypedRouter<Routes extends BaseRoutes>(
 
   const typedRouter: SafeRouterInstance<Routes> = {
     ...nextRouter,
-    prefetch: (pathname, ...pathConfig) => {
+    prefetch: <Path extends keyof Routes>(
+      pathname: Path,
+      ...pathConfig: SpreadablePathConfig<Routes, Path>
+    ) => {
       const [config] = pathConfig;
       try {
-        // @ts-ignore
-        return nextRouter.prefetch(getRoute(pathname, config));
+        return nextRouter.prefetch(
+          getRoute(pathname as Path, config as PathConfig<Routes, Path>)
+        );
       } catch (error: any) {
         console.error(
           error,
@@ -51,21 +55,29 @@ function createTypedRouter<Routes extends BaseRoutes>(
         throw error;
       }
     },
-    push: (pathname, ...pathConfig) => {
+    push: <Path extends keyof Routes>(
+      pathname: Path,
+      ...pathConfig: SpreadablePathConfig<Routes, Path>
+    ) => {
       const [config] = pathConfig;
       try {
-        // @ts-ignore
-        return nextRouter.push(getRoute(pathname, config));
+        return nextRouter.push(
+          getRoute(pathname as Path, config as PathConfig<Routes, Path>)
+        );
       } catch (error: any) {
         console.error(error, `Failed to push route: ${pathname.toString()}`);
         throw error;
       }
     },
-    replace: (pathname, ...pathConfig) => {
+    replace: <Path extends keyof Routes>(
+      pathname: Path,
+      ...pathConfig: SpreadablePathConfig<Routes, Path>
+    ) => {
       const [config] = pathConfig;
       try {
-        // @ts-ignore
-        return nextRouter.replace(getRoute(pathname, config));
+        return nextRouter.replace(
+          getRoute(pathname as Path, config as PathConfig<Routes, Path>)
+        );
       } catch (error: any) {
         console.error(error, `Failed to replace route: ${pathname.toString()}`);
         throw error;
