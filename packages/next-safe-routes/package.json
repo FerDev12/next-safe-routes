@@ -44,12 +44,17 @@
     "next",
     "react",
     "routes",
+    "routing",
     "navigation",
-    "type safe",
+    "type-safe",
     "safe routes"
   ],
   "author": "FerDev12",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FerDev12/next-safe-routes"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@types/eslint": "^8",
