@@ -5,7 +5,7 @@ import GetStarted from '../components/get-started';
 
 export default function Home() {
   return (
-    <div className='flex sm:min-h-[91vh] min-h-[88vh] flex-col items-center justify-center text-center px-2 py-8'>
+    <div className='flex h-[calc(100svh-64px)] flex-col items-center justify-center text-center px-2 py-8'>
       <Link
         href='https://github.com/ferdev12/next-safe-routes'
         target='_blank'

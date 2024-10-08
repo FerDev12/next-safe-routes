@@ -73,19 +73,10 @@ export function Navbar() {
             <Search />
             <div className='flex ml-2.5 sm:ml-0'>
               <Link
-                href='https://github.com/nisabmohd/NexDocs'
+                href='https://github.com/ferdev12/next-safe-routes'
                 className={buttonVariants({ variant: 'ghost', size: 'icon' })}
               >
                 <GithubIcon className='h-[1.1rem] w-[1.1rem]' />
-              </Link>
-              <Link
-                href='#'
-                className={buttonVariants({
-                  variant: 'ghost',
-                  size: 'icon',
-                })}
-              >
-                <TwitterIcon className='h-[1.1rem] w-[1.1rem]' />
               </Link>
               <ModeToggle />
             </div>
@@ -100,7 +91,7 @@ export function Logo() {
   return (
     <Link href='/' className='flex items-center gap-2.5'>
       <HexagonIcon className='w-7 h-7 text-muted-foreground fill-current' />
-      <h2 className='text-md font-bold'>AriaDocs</h2>
+      <h2 className='text-md font-bold'>Next Safe Routes</h2>
     </Link>
   );
 }
