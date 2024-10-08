@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   release:
     name: Release
@@ -34,6 +39,8 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: pnpm run publish-packages
+          commit: 'chore: update versions'
+          title: 'chore: update versions'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
