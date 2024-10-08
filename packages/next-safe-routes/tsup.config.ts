@@ -10,11 +10,11 @@ export default defineConfig({
     'src/cli/index.ts',
   ],
   format: ['cjs', 'esm'], // Build for commonJS and ESmodules
-  dts: true, // Generate declaration file (.d.ts)
-  splitting: false,
+  dts: true, // Generate declaration file (.d.ts),
   sourcemap: false, // TODO: Only emit when in development
   clean: true,
   outDir: 'dist',
+  splitting: true,
   minify: true,
   external: ['next', 'react', 'react-dom', '@types/react', '@types/react-dom'],
 });
