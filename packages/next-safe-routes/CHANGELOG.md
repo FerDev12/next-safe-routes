@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.4
+
+### Patch Changes
+
+- 0634795: Add typescript as peer dependency
+
 ## 0.0.3
 
 ### Patch Changes
