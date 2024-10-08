@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.3
+
+### Patch Changes
+
+- 50b7d45: Enabled code splitting for build output
+
 ## 0.0.2
 
 ### Patch Changes
