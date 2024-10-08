@@ -1,27 +1,27 @@
-import DocsBreadcrumb from "@/components/docs-breadcrumb";
-import Pagination from "@/components/pagination";
-import Toc from "@/components/toc";
-import { availableVersions, getRoutesFlatten } from "@/lib/routes-config";
-import { notFound } from "next/navigation";
-import { getDocsForSlug } from "@/lib/markdown";
-import { Typography } from "@/components/typography";
+import DocsBreadcrumb from '@/components/docs-breadcrumb';
+import Pagination from '@/components/pagination';
+import Toc from '@/components/toc';
+import { availableVersions, getRoutesFlatten } from '@/lib/routes-config';
+import { notFound } from 'next/navigation';
+import { getDocsForSlug } from '@/lib/markdown';
+import { Typography } from '@/components/typography';
 
 type PageProps = {
   params: { slug: string[] };
 };
 
 export default async function DocsPage({ params: { slug = [] } }: PageProps) {
-  const pathName = slug.join("/");
+  const pathName = slug.join('/');
   const res = await getDocsForSlug(pathName);
 
   if (!res) notFound();
   return (
-    <div className="flex items-start gap-14">
-      <div className="flex-[3] pt-10">
+    <div className='flex items-start gap-14'>
+      <div className='flex-[3] pt-10'>
         <DocsBreadcrumb paths={slug} />
         <Typography>
-          <h1 className="text-3xl -mt-2">{res.frontmatter.title}</h1>
-          <p className="-mt-4 text-muted-foreground text-[16.5px]">
+          <h1 className='text-3xl -mt-2'>{res.frontmatter.title}</h1>
+          <p className='-mt-4 text-muted-foreground text-[16.5px]'>
             {res.frontmatter.description}
           </p>
           <div>{res.content}</div>
@@ -34,12 +34,12 @@ export default async function DocsPage({ params: { slug = [] } }: PageProps) {
 }
 
 export async function generateMetadata({ params: { slug = [] } }: PageProps) {
-  const pathName = slug.join("/");
+  const pathName = slug.join('/');
   const res = await getDocsForSlug(pathName);
   if (!res) return null;
   const { frontmatter } = res;
   return {
-    title: frontmatter.title,
+    title: `${frontmatter.title} | Next Safe Routes`,
     description: frontmatter.description,
   };
 }
@@ -48,7 +48,7 @@ export function generateStaticParams() {
   const slugArr: { slug: string[] }[] = [];
   availableVersions.forEach((v) => {
     const arr = getRoutesFlatten(v).map((item) => ({
-      slug: [v, ...item.href.split("/").slice(1)],
+      slug: [v, ...item.href.split('/').slice(1)],
     }));
     slugArr.push(...arr);
   });

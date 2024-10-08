@@ -1,0 +1,111 @@
+---
+title: Quick Start
+description: Get up and running with Next Safe Routes in your project.
+---
+
+<Note title='Supported Versions' type='info'>
+  Next Safe Routes currently only supports Next.js versions >= 13.0.0 using the
+  "app" router.
+</Note>
+
+## Guide
+
+<Stepper>
+<StepperItem title='Create Next App'>
+Create a Next.js app with typescript if you don't already have one
+    
+```bash
+npx create-next-app@latest --typescript 
+```
+
+</StepperItem>
+
+<StepperItem title='Install Next Safe Routes'>
+
+```bash
+npm install next-safe-routs
+```
+
+</StepperItem>
+
+<StepperItem title='Generate Routes Type'>
+This will generate a file under src/types/routes.ts
+
+<Tabs defaultValue='plugin' className='w-[400px]'>
+  <TabsList>
+    <TabsTrigger value='plugin'>
+      Plugin
+    </TabsTrigger>
+    <TabsTrigger value='cli'>
+      CLI
+    </TabsTrigger>
+  </TabsList>
+  <TabsContent value='plugin'>
+
+    ```js
+    // next.config.mjs
+
+    import { withNextSafeRoutes } from 'next-safe-routes/plugin';
+
+    /** @type {import('next').NextConfig} */
+    const nextConfig = withNextSafeRoutes({
+      // The rest of your next.config.
+    });
+
+    export default nextConfig;
+    ```
+
+    ```bash
+    npm run dev
+    #or
+    npm run build
+    ````
+
+    <Note title='Turbopack Support' type='warning'>
+      Next Safe Routes currently does not support the use of turbopack.
+    </Note>
+
+  </TabsContent>
+  <TabsContent value='cli'>
+    ```bash 
+    npm run generate-routes
+    ```
+
+  </TabsContent>
+</Tabs>
+
+</StepperItem>
+
+<StepperItem title='Create Navigation Utils'>
+_We recommend creating a navigation.ts file at the root of your src directory_
+
+```ts
+// navigation.ts
+
+import { createNextSafeNavigation } from 'next-safe-routes';
+import { Routes } from './types/routes';
+
+export const { getRoute, Link, useRouter, redirect } =
+  createNextSafeNavigation<Routes>();
+```
+
+</StepperItem>
+</Stepper>
+
+## Example Usage
+
+### getRoute
+
+![getRoute example GIF](/get-route-example.gif)
+
+### useRouter
+
+![useRouter example GIF](/use-router-example.gif)
+
+### redirect
+
+![redirect example GIF](/redirect-example.gif)
+
+### \<Link>
+
+![link example GIF](/link-example.gif)

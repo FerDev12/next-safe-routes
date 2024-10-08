@@ -4,6 +4,7 @@ import {
   TwitterIcon,
   HexagonIcon,
   MoveUpRightIcon,
+  SignpostIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { buttonVariants } from './ui/button';
@@ -90,7 +91,7 @@ export function Navbar() {
 export function Logo() {
   return (
     <Link href='/' className='flex items-center gap-2.5'>
-      <HexagonIcon className='w-7 h-7 text-muted-foreground fill-current' />
+      <SignpostIcon className='w-7 h-7 text-teal-500' />
       <h2 className='text-md font-bold'>Next Safe Routes</h2>
     </Link>
   );

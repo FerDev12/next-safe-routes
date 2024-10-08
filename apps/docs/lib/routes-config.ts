@@ -7,7 +7,7 @@ export type EachRoute = {
   items?: EachRoute[];
 };
 
-const v0_0_1_ROUTES: EachRoute[] = [
+const vBETA: EachRoute[] = [
   {
     title: 'Getting Started',
     href: '/getting-started',
@@ -24,6 +24,10 @@ const v0_0_1_ROUTES: EachRoute[] = [
       {
         title: 'Installation',
         href: '/installation',
+      },
+      {
+        title: 'Quick Start',
+        href: '/quick-start',
       },
     ],
   },
@@ -52,6 +56,8 @@ const v0_0_1_ROUTES: EachRoute[] = [
   },
 ];
 
+const allRoutes: EachRoute[][] = [vBETA];
+
 type Page = { title: string; href: string };
 
 function getRecurrsiveAllLinks(node: EachRoute) {
@@ -74,8 +80,10 @@ export function getRoutesFlatten(v: Version) {
 export function getRoutesForVersion(v: Version) {
   // Add accordingly
   switch (v) {
-    case 'v0.0.1':
-      return v0_0_1_ROUTES;
+    case 'beta':
+      return vBETA;
+    default:
+      return allRoutes[allRoutes.length - 1];
   }
 }
 
@@ -89,5 +97,5 @@ export function getPreviousNext(path: string, v: Version) {
   };
 }
 
-export const availableVersions = ['v0.0.1'] as const;
+export const availableVersions = ['beta'] as const;
 export type Version = (typeof availableVersions)[number];

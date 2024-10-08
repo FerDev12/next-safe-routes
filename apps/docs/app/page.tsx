@@ -1,5 +1,5 @@
 import { buttonVariants } from '@/components/ui/button';
-import { MoveUpRightIcon, TerminalIcon } from 'lucide-react';
+import { MoveUpRightIcon, SignpostIcon, TerminalIcon } from 'lucide-react';
 import Link from 'next/link';
 import GetStarted from '../components/get-started';
 
@@ -9,13 +9,14 @@ export default function Home() {
       <Link
         href='https://github.com/ferdev12/next-safe-routes'
         target='_blank'
-        className='mb-5 sm:text-lg flex items-center gap-2 underline underline-offset-4'
+        className='mb-6 sm:text-lg flex items-center gap-2 underline underline-offset-4'
       >
         Follow along on GitHub{' '}
         <MoveUpRightIcon className='w-4 h-4 font-extrabold' />
       </Link>
-      <h1 className='text-3xl font-bold mb-4 sm:text-7xl'>
-        Type-Safe routing for your Next.js app.
+      <h1 className='flex flex-col justify-center items-center text-3xl font-bold mb-4 sm:text-7xl'>
+        <SignpostIcon className='w-14 h-14 text-teal-500  mr-2' />
+        Type-Safe routing for your Next.js app.{' '}
       </h1>
       <p className='mb-8 sm:text-xl max-w-[800px] text-muted-foreground'>
         Navigate with confidence across pages within your app.
