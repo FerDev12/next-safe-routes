@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.7
+
+### Patch Changes
+
+- db38a82: Update README documentation examples
+
 ## 0.0.6
 
 ### Patch Changes

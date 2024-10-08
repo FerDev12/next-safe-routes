@@ -1,5 +1,12 @@
 # e2e
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies [db38a82]
+  - next-safe-routes@0.0.7
+
 ## 0.1.6
 
 ### Patch Changes
