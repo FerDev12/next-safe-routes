@@ -1,0 +1,90 @@
+---
+title: Installation
+description: Installation guide for our next-safe-routes.
+---
+
+To get started with next-safe-routes, follow these simple steps:
+
+## Prerequisites
+
+Before installing our application, make sure you have the following:
+
+- Node.js installed on your machine
+- A Next.js application
+
+<Note title='Supported Versions' type='info'>
+  <code>next-safe-routes</code> currently only supports Next.js versions >=
+  13.0.0 "app" router
+</Note>
+
+## Installation Steps
+
+<Stepper>
+<StepperItem title="Clone the Repository">
+Create a Next.js app
+
+```bash
+npx create-next-app@latest
+```
+
+</StepperItem>
+<StepperItem title="Install Next Safe routes">
+```bash
+npm install next-safe-routes
+```
+
+</StepperItem>
+
+<StepperItem title="Create your project's Routes type">
+To create the Routes type you can either use the cli tool or the Next.js pluggin.
+
+## CLI
+
+```bash
+npm run generate-routes
+```
+
+## Plugin
+
+```js
+import { withNextSafeRoutes } from 'next-safe-routes/plugin';
+
+/** @type {import('next').NextConfig} */
+const nextConfig = withNextSafeRoutes({
+  // The rest of your next.config.
+});
+
+export default nextConfig;
+```
+
+```bash
+npm run build
+# or
+npm run dev
+```
+
+<Note title='Turborepo Support' type='warning'>
+  <code>next-safe-routes</code> currently does not support the use of Turborepo.
+  If you are using Turborepo for development consider running the CLI command
+  before starting your server.
+</Note>
+
+</StepperItem>
+
+<StepperItem title='Create your navigation helpers'>
+We recommend creating a navigation.ts file in your src directory.
+
+```ts
+import { createNextSafeNavigation } from 'next-safe-routes';
+// Import the generated Routes type
+import { Routes } from './types/routes';
+
+export const { getRoute, Link, useRouter, redirect } =
+  createNextSafeNavigation<Routes>();
+```
+
+</StepperItem>
+
+</Stepper>
+
+### And that's it! You can now use your navigation utils wherever you would use Next.js's native routing utilities.

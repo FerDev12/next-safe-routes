@@ -2,34 +2,32 @@
 
 import React, { forwardRef, Ref, useMemo } from 'react';
 import NextLink, { LinkProps as NextLinkProps } from 'next/link';
-import { BaseRoutes, ParamsConfig, PathConfig, Query } from '@/types';
+import { BaseRoutes, PathConfig } from '@/types';
 import { createGetSafeRoute } from './create-get-safe-route';
 
-export type RequiresContextQueryConfig<T> = T extends
-  | {
-      context: string;
-      query?: Query;
-    }
-  | {
-      context: string;
-      query: Query;
-    }
+export type LinkRequiresParamsConfig<T> = T extends {
+  params: Record<string, string | string[]>;
+}
   ? true
   : false;
 
-export type ContextQueryConfig<
+export type LinkParamsConfig<
   Routes extends BaseRoutes,
   Path extends keyof Routes,
-  Config extends Routes[Path],
-> = Omit<Config, 'params'>;
+> =
+  LinkRequiresParamsConfig<Routes[Path]> extends true
+    ? {
+        params: Routes[Path]['params'];
+      }
+    : { params?: Routes[Path]['params'] };
+
+export type LinkQueryContextConfig<
+  Routes extends BaseRoutes,
+  Path extends keyof Routes,
+> = Omit<Routes[Path], 'params'>;
 
 export type Href<Routes extends BaseRoutes, Path extends keyof Routes> = {
-  href:
-    | ({
-        pathname: Path;
-      } & ParamsConfig<Routes, Path, Routes[Path]['params']> &
-        ContextQueryConfig<Routes, Path, Routes[Path]>)
-    | string;
+  href: ({ pathname: Path } & PathConfig<Routes, Path>) | string;
 };
 
 export type SafeLinkProps<
@@ -55,19 +53,11 @@ export function createSafeLink<Routes extends BaseRoutes>() {
       const parsedHref = useMemo(() => {
         if (typeof href === 'string') return href;
 
-        const config: Partial<PathConfig<Routes, Path>> = {};
-
-        if (href.params) {
-          config.params = href.params;
-        }
-
-        if (href.query) {
-          config.query = href.query;
-        }
-
-        if ('context' in href && href.context) {
-          config.context = href.context as Routes[Path]['context'];
-        }
+        const config: Partial<PathConfig<Routes, Path>> = {
+          params: href.params as Routes[Path]['params'],
+          context: href.context as Routes[Path]['context'],
+          query: href.query as Routes[Path]['query'],
+        } as PathConfig<Routes, Path>;
 
         try {
           return getRouteSingleton(

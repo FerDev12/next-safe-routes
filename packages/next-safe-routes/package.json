@@ -1,6 +1,6 @@
 {
   "name": "next-safe-routes",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Type-Safe navigation for Next.js.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -54,7 +54,6 @@
   "license": "MIT",
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
     "@types/eslint": "^8",
     "@types/node": "^20",
     "@types/react": "^18.3.11",
