@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.6
+
+### Patch Changes
+
+- 759825b: Add README at package level
+
 ## 0.0.5
 
 ### Patch Changes
