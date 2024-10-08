@@ -7,7 +7,11 @@ import yargs, { Arguments, CommandBuilder } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { isUsingSrcDirectory } from '@/utils/is-using-src-directory';
 import { getFullOuptutPath } from '@/utils/get-output-path';
-import { generateRoutes } from '@/core';
+import { logger } from '@/utils/logger';
+
+async function importGereateRoutes() {
+  return await import('@/core');
+}
 
 type RouteOptions = Arguments & {
   outPath?: string;
@@ -19,15 +23,14 @@ export function buildRoutes(
   outPath: string,
   verbose: boolean
 ) {
-  try {
-    if (verbose) {
-      console.log(`Generating routes from ${pagesDir}`);
-      console.log(`Output file: ${outPath}`);
-    }
-    generateRoutes(pagesDir, outPath);
-  } catch (error: any) {
-    console.error('Error generating routes:', error);
+  if (verbose) {
+    logger.info(`Generating routes from ${pagesDir}`);
+    logger.info(`Output file: ${outPath}`);
   }
+
+  importGereateRoutes()
+    .then(({ generateRoutes }) => generateRoutes(pagesDir, outPath))
+    .catch((error: any) => logger.error('Error generating routes:', error));
 }
 
 const builder: CommandBuilder<RouteOptions, RouteOptions> = (yargs) => {
