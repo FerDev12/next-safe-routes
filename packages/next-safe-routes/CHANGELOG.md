@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.5
+
+### Patch Changes
+
+- 973ecf3: Update README and package.json
+
 ## 0.0.4
 
 ### Patch Changes
