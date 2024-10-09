@@ -1,5 +1,12 @@
 # e2e
 
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies [0553731]
+  - next-safe-routes@0.0.10
+
 ## 0.1.9
 
 ### Patch Changes
