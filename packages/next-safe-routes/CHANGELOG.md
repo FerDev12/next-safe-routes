@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.10
+
+### Patch Changes
+
+- 0553731: Update dynamic params validation in getRoute function
+
 ## 0.0.9
 
 ### Patch Changes
