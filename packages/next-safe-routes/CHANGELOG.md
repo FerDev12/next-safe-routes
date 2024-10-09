@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.8
+
+### Patch Changes
+
+- 49c1769: Fixed catch-all and optional catch-all routes. And added e2e testing as well as unit tests using vite and playwright
+
 ## 0.0.7
 
 ### Patch Changes
