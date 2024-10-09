@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.11
+
+### Patch Changes
+
+- 9d6378d: Fix getRoute function to throw error if there is a missing required dynamic parameter
+
 ## 0.0.10
 
 ### Patch Changes
