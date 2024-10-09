@@ -28,8 +28,8 @@ jobs:
       - name: Install Playwright Browsers
         run: pnpm turbo run install-browsers --filter=e2e
 
-      - name: Run tests
-        run: pnpm turbo run build && pnpm run turbo test
+      - name: Build and Test
+        run: pnpm turbo run build && pnpm turbo run test
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
