@@ -1,10 +1,37 @@
-import { BaseRoutes, SpreadablePathConfig } from '@/types';
+import { BaseRoutes, Params, SpreadablePathConfig } from '@/types';
 
 type ParamValue = string | number | string[] | undefined;
 type Segment = 'dynamic' | 'catch-all' | 'optional-catch-all';
 
 function extractDynamicSegments(pathname: string): string[] {
   return pathname.match(/\[(?:\[\.\.\.)?[^\]]+\](?:\])?/g) || [];
+}
+
+function extractParamName(segment: string): string {
+  return segment.replace(/\[|\]|\.\.\./g, '');
+}
+
+function determineSegmentType(segment: string): Segment {
+  if (segment.startsWith('[[...') && segment.endsWith(']]')) {
+    return 'optional-catch-all';
+  }
+  if (segment.startsWith('[...') && segment.startsWith(']')) {
+    return 'catch-all';
+  }
+  return 'dynamic';
+}
+
+function validateParam(
+  segmentType: Segment,
+  paramName: string,
+  inputParams?: Params
+) {
+  if (
+    !inputParams ||
+    (!(paramName in inputParams) && segmentType !== 'optional-catch-all')
+  ) {
+    throw new Error(`Missing required parameter: ${paramName}`);
+  }
 }
 
 function validateParamValue(
@@ -103,24 +130,13 @@ export function createGetSafeRoute<Routes extends BaseRoutes>() {
 
     if (dynamicSegments.length > 0) {
       for (const segment of dynamicSegments) {
-        const paramName = segment.replace(/\[|\]|\.\.\./g, '');
+        const segmentType = determineSegmentType(segment);
+        const paramName = extractParamName(segment);
         const paramValue = config.params?.[paramName];
-        const segmentType =
-          segment.startsWith('[[...') && segment.endsWith(']]')
-            ? 'optional-catch-all'
-            : segment.startsWith('[...') && segment.endsWith(']')
-              ? 'catch-all'
-              : 'dynamic';
 
-        if (
-          !config.params ||
-          (!(paramName in config.params) &&
-            segmentType !== 'optional-catch-all')
-        ) {
-          throw new Error(`Missing required parameter: ${paramName}`);
-        }
-
+        validateParam(segmentType, paramName, config.params);
         validateParamValue(paramName, paramValue, segmentType);
+
         modifiedPathname = replaceSegment(
           modifiedPathname,
           segment,
