@@ -1,64 +1,34 @@
 'use client';
 
-import { Link, useRouter, getRoute } from '@/navigation';
+import { getRoute, Link, useRouter } from '@/navigation';
 
-export default function Home() {
+export default function HomePage() {
+  const authRoute = getRoute('/auth/sign-in/[[...provider]]', {
+    params: {
+      provider: ['github'],
+    },
+  });
+  console.log(authRoute);
   const router = useRouter();
 
-  console.time('get route');
-  const route = getRoute('/products/[productId]', {
-    params: { productId: '123' },
-    query: { foo: 'bar', bar: 'foo', explore: '123412341234' },
-  });
-  console.timeEnd('get route');
-
-  const onClick = () => {
-    router.push('/users/[userId]', {
+  const handleClick = () => {
+    router.push('/products/[productId]', {
       params: {
-        userId: '123',
+        productId: '123',
       },
     });
   };
-
   return (
-    <main className='flex flex-col items-center'>
-      <Link href={{ pathname: '/' }}>Go to home</Link>
+    <main>
+      <button onClick={handleClick}>Go to product by id</button>
       <Link
         href={{
-          pathname: '/users/[userId]',
-          params: {
-            userId: '123',
-          },
+          pathname: '/posts/[postId]',
+          params: { postId: '123' },
         }}
       >
-        Go to user Id Link
+        Go to post by id
       </Link>
-      <Link
-        href={{
-          pathname: '/profile',
-          context: 'user',
-          query: {
-            userId: '123',
-          },
-        }}
-      >
-        Go to user profile
-      </Link>
-      <Link
-        href={{
-          pathname: '/profile',
-          context: 'org',
-          query: {
-            orgId: '123',
-            employeeId: '123',
-          },
-        }}
-      >
-        Go to org profile
-      </Link>
-      <Link href={route}>Go to product Id</Link>
-      <button onClick={onClick}>Go to user Id Button</button>
-      <div>{route}</div>
     </main>
   );
 }

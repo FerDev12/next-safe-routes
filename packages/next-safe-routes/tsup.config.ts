@@ -14,7 +14,7 @@ export default defineConfig({
   sourcemap: false, // TODO: Only emit when in development
   clean: true,
   outDir: 'dist',
-  splitting: true,
+  splitting: false,
   minify: true,
   external: ['next', 'react', 'react-dom', '@types/react', '@types/react-dom'],
 });
