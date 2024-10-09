@@ -15,7 +15,7 @@ function determineSegmentType(segment: string): Segment {
   if (segment.startsWith('[[...') && segment.endsWith(']]')) {
     return 'optional-catch-all';
   }
-  if (segment.startsWith('[...') && segment.startsWith(']')) {
+  if (segment.startsWith('[...') && segment.endsWith(']')) {
     return 'catch-all';
   }
   return 'dynamic';
@@ -27,8 +27,8 @@ function validateParam(
   inputParams?: Params
 ) {
   if (
-    !inputParams ||
-    (!(paramName in inputParams) && segmentType !== 'optional-catch-all')
+    segmentType !== 'optional-catch-all' &&
+    (inputParams === undefined || !(paramName in inputParams))
   ) {
     throw new Error(`Missing required parameter: ${paramName}`);
   }
@@ -75,16 +75,18 @@ function replaceSegment(
       );
     }
     return pathname.replace(`/${segment}`, '');
-  } else if (segmentType === 'catch-all') {
+  }
+
+  if (segmentType === 'catch-all') {
     // Catch-all route
     return pathname.replace(
       segment,
       (paramValue as string[]).map(encodeURIComponent).join('/')
     );
-  } else {
-    // Regular dynamic route
-    return pathname.replace(segment, encodeURIComponent(String(paramValue)));
   }
+
+  // Regular dynamic route
+  return pathname.replace(segment, encodeURIComponent(String(paramValue)));
 }
 
 function buildQueryString(
@@ -120,10 +122,6 @@ export function createGetSafeRoute<Routes extends BaseRoutes>() {
   ) {
     const [config] = pathConfig;
 
-    if (!config) {
-      return pathname as string;
-    }
-
     let modifiedPathname = pathname as string;
 
     const dynamicSegments = extractDynamicSegments(modifiedPathname);
@@ -132,9 +130,9 @@ export function createGetSafeRoute<Routes extends BaseRoutes>() {
       for (const segment of dynamicSegments) {
         const segmentType = determineSegmentType(segment);
         const paramName = extractParamName(segment);
-        const paramValue = config.params?.[paramName];
+        const paramValue = config?.params?.[paramName];
 
-        validateParam(segmentType, paramName, config.params);
+        validateParam(segmentType, paramName, config?.params);
         validateParamValue(paramName, paramValue, segmentType);
 
         modifiedPathname = replaceSegment(
@@ -147,7 +145,7 @@ export function createGetSafeRoute<Routes extends BaseRoutes>() {
     }
 
     let query = '';
-    if ('query' in config && config.query) {
+    if (config?.query) {
       query = buildQueryString(config.query);
     }
 

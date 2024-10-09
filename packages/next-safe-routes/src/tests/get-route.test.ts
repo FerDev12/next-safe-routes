@@ -59,7 +59,19 @@ test('Adds query paramters', () => {
   const route = getRoute('/test', {
     query: {
       foo: 'bar',
+      bar: 'foo',
     },
   });
-  expect(route).toEqual('/test?foo=bar');
+  expect(route).toEqual('/test?foo=bar&bar=foo');
+});
+
+test('throws an error when a required parameter is missing', () => {
+  try {
+    expect(getRoute('/profiles/[profileId]')).toThrowError();
+  } catch (err: any) {}
+});
+
+test('Allows for empty optional-catch-all param', () => {
+  const route = getRoute('/auth/sign-in/[[...provider]]');
+  expect(route).toEqual('/auth/sign-in');
 });
