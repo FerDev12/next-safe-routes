@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.9
+
+### Patch Changes
+
+- cf871df: Updated build-and-test workflow
+
 ## 0.0.8
 
 ### Patch Changes

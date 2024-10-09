@@ -1,5 +1,13 @@
 # e2e
 
+## 0.1.9
+
+### Patch Changes
+
+- cf871df: Updated build-and-test workflow
+- Updated dependencies [cf871df]
+  - next-safe-routes@0.0.9
+
 ## 0.1.8
 
 ### Patch Changes
