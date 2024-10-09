@@ -10,35 +10,72 @@ description: Get up and running with Next Safe Routes in your project.
 
 ## Guide
 
+<Tabs defaultValue='npm'>
 <Stepper>
 <StepperItem title='Create Next App'>
 Create a Next.js app with typescript if you don't already have one
     
-```bash
-npx create-next-app@latest --typescript 
-```
+  <TabsList>
+    <TabsTrigger value='npm'>npm</TabsTrigger>
+    <TabsTrigger value='pnpm'>pnpm</TabsTrigger>
+    <TabsTrigger value='yarn'>yarn</TabsTrigger>
+  </TabsList>
+  <TabsContent value='npm'>
+    ```bash
+    npx create-next-app@latest --typescript 
+    ```
+  </TabsContent>
+  <TabsContent value='pnpm'>
+    ```bash 
+    pnpm create next-app@latest --typescript
+    ```
+  </TabsContent>
+  <TabsContent value='yarn'>
+    ```bash 
+    yarn create next-app@latest --typescript
+    ```
+  </TabsContent>
 
 </StepperItem>
 
 <StepperItem title='Install Next Safe Routes'>
 
-```bash
-npm install next-safe-routs
-```
+  <TabsList>
+    <TabsTrigger value='npm'>npm</TabsTrigger>
+    <TabsTrigger value='pnpm'>pnpm</TabsTrigger>
+    <TabsTrigger value='yarn'>yarn</TabsTrigger>
+  </TabsList>
+  <TabsContent value='npm'>
+
+    ```bash
+    npm install next-safe-routs
+    ```
+
+  </TabsContent>
+  <TabsContent value='pnpm'>
+
+    ```bash
+    pnpm add next-safe-routes
+    ```
+
+  </TabsContent>
+  <TabsContent value='yarn'>
+
+    ```bash
+    yarn add next-safe-routes
+    ```
+
+  </TabsContent>
 
 </StepperItem>
 
 <StepperItem title='Generate Routes Type'>
 This will generate a file under src/types/routes.ts
 
-<Tabs defaultValue='plugin' className='w-[400px]'>
+<Tabs defaultValue='plugin' >
   <TabsList>
-    <TabsTrigger value='plugin'>
-      Plugin
-    </TabsTrigger>
-    <TabsTrigger value='cli'>
-      CLI
-    </TabsTrigger>
+    <TabsTrigger value='plugin'>Plugin</TabsTrigger>
+    <TabsTrigger value='cli'>CLI</TabsTrigger>
   </TabsList>
   <TabsContent value='plugin'>
 
@@ -55,15 +92,46 @@ This will generate a file under src/types/routes.ts
     export default nextConfig;
     ```
 
-    ```bash
-    npm run dev
-    #or
-    npm run build
-    ````
+<Tabs defaultValue='npm'>
+  <TabsList>
+    <TabsTrigger value='npm'>npm</TabsTrigger>
+    <TabsTrigger value='pnpm'>pnpm</TabsTrigger>
+    <TabsTrigger value='yarn'>yarn</TabsTrigger>
+  </TabsList>
+  <TabsContent value='npm'>
 
-    <Note title='Turbopack Support' type='warning'>
-      Next Safe Routes currently does not support the use of turbopack.
-    </Note>
+    ```bash
+    npm run build
+    # or
+    npm run dev
+    ```
+
+  </TabsContent>
+  <TabsContent value='pnpm'>
+
+    ```bash
+    pnpm build
+    # or
+    pnpm dev
+    ```
+
+  </TabsContent>
+  <TabsContent value='yarn'>
+
+    ```bash
+    yarn build
+    # or
+    yarn dev
+    ```
+
+  </TabsContent>
+</Tabs>
+
+{' '}
+
+<Note title='Turbopack Support' type='warning'>
+  Next Safe Routes currently does not support the use of turbopack.
+</Note>
 
   </TabsContent>
   <TabsContent value='cli'>
@@ -91,6 +159,7 @@ export const { getRoute, Link, useRouter, redirect } =
 
 </StepperItem>
 </Stepper>
+</Tabs>
 
 ## Example Usage
 

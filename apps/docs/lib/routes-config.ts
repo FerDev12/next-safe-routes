@@ -14,10 +14,6 @@ const vBETA: EachRoute[] = [
     noLink: true,
     items: [
       {
-        title: 'Changelog',
-        href: '/changelog',
-      },
-      {
         title: 'Introduction',
         href: '/introduction',
       },
@@ -34,7 +30,6 @@ const vBETA: EachRoute[] = [
   {
     title: 'Navigation',
     href: '/navigation',
-    noLink: true,
     items: [
       {
         title: 'createNextSafeNavigation',
@@ -51,6 +46,24 @@ const vBETA: EachRoute[] = [
       {
         title: 'redirect',
         href: '/redirect',
+      },
+      {
+        title: '<Link />',
+        href: '/link',
+      },
+    ],
+  },
+  {
+    title: 'Generate Routes',
+    href: '/generate-routes',
+    items: [
+      {
+        title: 'withNextSafeRoutes',
+        href: '/plugin',
+      },
+      {
+        title: 'CLI',
+        href: '/cli',
       },
     ],
   },

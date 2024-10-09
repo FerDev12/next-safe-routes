@@ -1,0 +1,38 @@
+---
+title: createNextSafeNavigation
+description: Learn how to create all your routing utils with createNextSafeNavigation
+---
+
+We recommend creating and exporting your routing utilities in a file called navigation.ts at the root of your src directory. Althoug you can name it and place it wherever you want.
+
+```ts
+// navigation.ts
+
+import { createNextSafeNavigation } from 'next-safe-routes';
+import { Routes } from './types/routes';
+
+export const { getRoute, Link, useRouter, redirect } =
+  createNextSafeNavigation<Routes>();
+```
+
+The Routes type parameter is optional but highly recommended to provide type-safety for each route of your application.
+
+See [generate routes](/beta/docs/generate-routes) for more information about generating your projects Routes type.
+
+## What happens if I ommit the Routes type?
+
+The answer is that you loose type-safety. Without the generated Routes type your navigation utilities will have no information to infer your routes.
+
+On the bright side it will still provide some safety-features:
+
+```ts
+import { createNextSafeNavigation } from 'next-safe-routes';
+
+// Omit Routes type
+const { getRoute, ...otherUtilities } = createNextSafeNavigation();
+
+// This will throw a runtime error: "Missing required parameter: ${paramName}"
+getRoute('/products/[productId]');
+```
+
+On the example above we entered a route that takes in the dynamic parameter "productId" but we omitted passing it in the pathConfig argument. This will throw an error indicating that the parameter is required.

@@ -5,6 +5,7 @@ import {
   HexagonIcon,
   MoveUpRightIcon,
   SignpostIcon,
+  HeartIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import { buttonVariants } from './ui/button';
@@ -15,6 +16,7 @@ import { SheetClose } from '@/components/ui/sheet';
 import NavGetStarted from './nav-get-started';
 import dynamic from 'next/dynamic';
 import { ReactNode } from 'react';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 const VersionManager = dynamic(() => import('./version-select'), {
   ssr: false,
@@ -37,10 +39,10 @@ export const NAVLINKS: NavLink[] = [
   //   title: "Blog",
   //   href: "/blog",
   // },
-  {
-    title: 'Examples',
-    href: '#',
-  },
+  // {
+  //   title: 'Examples',
+  //   href: '#',
+  // },
   // {
   //   title: "Guides",
   //   href: "#",
@@ -73,12 +75,34 @@ export function Navbar() {
           <div className='flex items-center gap-2'>
             <Search />
             <div className='flex ml-2.5 sm:ml-0'>
-              <Link
-                href='https://github.com/ferdev12/next-safe-routes'
-                className={buttonVariants({ variant: 'ghost', size: 'icon' })}
-              >
-                <GithubIcon className='h-[1.1rem] w-[1.1rem]' />
-              </Link>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href='https://github.com/ferdev12/next-safe-routes'
+                    className={buttonVariants({
+                      variant: 'ghost',
+                      size: 'icon',
+                    })}
+                  >
+                    <GithubIcon className='w-[1.1rem] h-[1.1rem]' />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Github</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href='#'
+                    className={buttonVariants({
+                      variant: 'ghost',
+                      size: 'icon',
+                    })}
+                  >
+                    <HeartIcon className='w-[1.1rem] h-[1.1rem] text-red-500 fill-red-500' />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Sponsor</TooltipContent>
+              </Tooltip>
               <ModeToggle />
             </div>
           </div>

@@ -1,0 +1,97 @@
+---
+title: Generate Routes
+description: Generate your project's Routes type.
+---
+
+In order for Next Safe Routes to provide you with type-safety you need to create a Routes type that describes your project's routes. You could do this in a manual process but this would be too time consuming and error-prone. So Next Safe Routes ships with two built-in ways of generating this type automatically for you.
+
+## How to
+
+1.  [withNextSafeRoutes](/docs/beta/generate-routes/plugin) (recommended)
+
+    A Next.js plugin that will run generate your routes whenever you build your project or run your development server.
+
+    ```js
+    // next.config.mjs
+
+    import { withNextSafeRoutes } from 'next-safe-routes/plugin';
+
+    /** @type {import('next').NextConfig} */
+    const nextConfig = withNextSafeRoutes({
+      // The rest of your next.config.
+    });
+
+    export default nextConfig;
+    ```
+
+    <Note title='Turbopack Support' type='warning'>
+      Next Safe Routes currently does not support the use of turbopack when
+      using our built-in pluggin.
+    </Note>
+
+2.  [CLI](/docs/beta/generate-routes/cli) command.
+
+    You can also use the CLI to generate your Routes type. This is good for quick testing and prototyping but we do not recommend relying on this method since you must remember running the command each time your projects structure changes.
+
+    <Tabs defaultValue='npm'>
+
+    <TabsList>
+      <TabsTrigger value='npm'>npm</TabsTrigger>
+      <TabsTrigger value='pnpm'>pnpm</TabsTrigger>
+      <TabsTrigger value='yarn'>yarn</TabsTrigger>
+    </TabsList>
+
+    <TabsContent value='npm'>
+
+    ```
+    bash npm run generate-routes
+    ```
+
+    </TabsContent>
+
+    <TabsContent value='pnpm'>
+
+    ```
+    bash pnpm generate-routes
+    ```
+
+    </TabsContent>
+
+    <TabsContent value='yarn'>
+
+    ```
+    bash yarn generate-routes
+    ```
+
+    </TabsContent>
+
+    </Tabs>
+
+## Routes
+
+```ts
+// src/types/routes.ts
+
+export type Routes = {
+  '/': { query?: Record<string, string> };
+  '/auth/sign-in/[[...provider]]': {
+    params: { provider: string[] | undefined };
+    query?: Record<string, string>;
+  };
+  '/products/[productId]': {
+    params: { productId: string };
+    query?: Record<string, string>;
+  };
+  '/profile': { context: 'org' | 'user' } & (
+    | {
+        context: 'org';
+        query: Record<string, string> & { orgId: string; employeeId?: string };
+      }
+    | { context: 'user'; query: Record<string, string> & { userId: string } }
+  );
+  '/users/[userId]': {
+    params: { userId: string };
+    query?: Record<string, string>;
+  };
+};
+```

@@ -1,0 +1,61 @@
+---
+title: getRoute
+description: getRoute is our main utility and is used under the hood by all other navigation utilities created by (createNextSafeNavigation)[/base/docs/navigation/create-next-safe-navigation] to parse any given route.
+---
+
+```ts
+imort { getRoute } from '../navigation.ts'
+
+const route = getRoute('/products/[productId]', {
+  params: {
+    productId: 123
+  },
+  query: {
+    foo: 'bar'
+  }
+})
+
+console.log(route) // route === /products/123?foo=bar
+```
+
+getRoute returns the final parsed route.
+
+<Note title='Environment' type='info'>
+  getRoute can be used in any place within your Next app including server
+  components, client components, API routes, middleware and serve actions.
+</Note>
+
+In a way getRoute is like an escape hatch if you do not want to use our other routing utilities \([Link](/docs/beta/navigation/link), [useRouter](/docs/beta/use-router), [redirect](/docs/beta/redirect)).
+
+You can generate your desired route with getRoute and then use any method you want to navigate to that desired route:
+
+```tsx
+'use client'
+
+import { useRouter } from 'next/navigation'
+import { getRoute } from './navigation.ts'
+
+export function Component() {
+  const router = useRouter()
+
+  const handleClick = () => {
+    // Generate your type-safe route with getRoute
+    const route = getRoute('/products/[productId], {
+      params: {
+        productId: '123'
+      }
+    })
+
+    // Using our generated route with Next.js native router
+    router.push(route)
+  }
+
+  return <button onClick={handleClick}>
+    Navigate to route
+  </button>
+}
+```
+
+## Example Usage
+
+![getRoute example GIF](/get-route-example.gif)

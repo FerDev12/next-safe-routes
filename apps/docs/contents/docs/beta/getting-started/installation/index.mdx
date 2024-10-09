@@ -19,19 +19,67 @@ Before installing our application, make sure you have the following:
 
 ## Installation Steps
 
+<Tabs defaultValue='npm'>
 <Stepper>
-<StepperItem title="Clone the Repository">
-Create a Next.js app
+<StepperItem title="Create Next App">
 
-```bash
-npx create-next-app@latest
-```
+Create a Next.js application with typescript if you haven't done so already.
+
+  <TabsList>
+    <TabsTrigger value='npm'>npm</TabsTrigger>
+    <TabsTrigger value='pnpm'>pnpm</TabsTrigger>
+    <TabsTrigger value='yarn'>yarn</TabsTrigger>
+  </TabsList>
+  <TabsContent value='npm'>
+
+    ```bash
+    npx create-next-app@latest --typescript
+    ```
+
+  </TabsContent>
+  <TabsContent value='pnpm'>
+
+    ```bash
+    pnpm create next-app@latest --typescript
+    ```
+
+  </TabsContent>
+  <TabsContent value='yarn'>
+
+    ```bash
+    yarn create next-app@latest --typescript
+    ```
+
+  </TabsContent>
 
 </StepperItem>
 <StepperItem title="Install Next Safe routes">
-```bash
-npm install next-safe-routes
-```
+  <TabsList>
+    <TabsTrigger value='npm'>npm</TabsTrigger>
+    <TabsTrigger value='pnpm'>pnpm</TabsTrigger>
+    <TabsTrigger value='yarn'>yarn</TabsTrigger>
+  </TabsList>
+  <TabsContent value='npm'>
+
+    ```bash
+    npm install next-safe-routs
+    ```
+
+  </TabsContent>
+  <TabsContent value='pnpm'>
+
+    ```bash
+    pnpm add next-safe-routes
+    ```
+
+  </TabsContent>
+  <TabsContent value='yarn'>
+
+    ```bash
+    yarn add next-safe-routes
+    ```
+
+  </TabsContent>
 
 </StepperItem>
 
@@ -40,9 +88,32 @@ To create the Routes type you can either use the cli tool or the Next.js pluggin
 
 ## CLI
 
-```bash
-npm run generate-routes
-```
+  <TabsList>
+    <TabsTrigger value='npm'>npm</TabsTrigger>
+    <TabsTrigger value='pnpm'>pnpm</TabsTrigger>
+    <TabsTrigger value='yarn'>yarn</TabsTrigger>
+  </TabsList>
+  <TabsContent value='npm'>
+
+    ```bash
+    npm run generate-routes
+    ```
+
+  </TabsContent>
+  <TabsContent value='pnpm'>
+
+    ```bash
+    pnpm generate-routes
+    ```
+
+  </TabsContent>
+  <TabsContent value='yarn'>
+
+    ```bash
+    yarn generate-routes
+    ```
+
+  </TabsContent>
 
 ## Plugin
 
@@ -57,11 +128,38 @@ const nextConfig = withNextSafeRoutes({
 export default nextConfig;
 ```
 
-```bash
-npm run build
-# or
-npm run dev
-```
+  <TabsList>
+    <TabsTrigger value='npm'>npm</TabsTrigger>
+    <TabsTrigger value='pnpm'>pnpm</TabsTrigger>
+    <TabsTrigger value='yarn'>yarn</TabsTrigger>
+  </TabsList>
+  <TabsContent value='npm'>
+
+    ```bash
+    npm run build
+    # or
+    npm run dev
+    ```
+
+  </TabsContent>
+  <TabsContent value='pnpm'>
+
+    ```bash
+    pnpm build
+    # or
+    pnpm dev
+    ```
+
+  </TabsContent>
+  <TabsContent value='yarn'>
+
+    ```bash
+    yarn build
+    # or
+    yarn dev
+    ```
+
+  </TabsContent>
 
 <Note title='Turborepo Support' type='warning'>
   <code>next-safe-routes</code> currently does not support the use of Turborepo.
@@ -86,5 +184,6 @@ export const { getRoute, Link, useRouter, redirect } =
 </StepperItem>
 
 </Stepper>
+</Tabs>
 
 ### And that's it! You can now use your navigation utils wherever you would use Next.js's native routing utilities.
