@@ -170,12 +170,15 @@ function getRouteParams(routePath: string): Params {
       let paramName = segment.slice(1, -1);
 
       if (paramName.startsWith('...')) {
+        // Catch-all
         paramName = paramName.slice(3);
         params[paramName] = 'string[]';
       } else if (paramName.startsWith('[...') && paramName.endsWith(']')) {
+        // Optional-catch-all
         paramName = paramName.slice(4, -1);
         params[paramName] = 'string[] | undefined';
       } else {
+        // Normal dynamic segment
         params[paramName] = 'string';
       }
     }
@@ -422,26 +425,26 @@ function generateRoute(route: string, config: RouteConfig) {
   ${contexts
     .map((ctx) => {
       const parallelConfig = config.parallelRoutes![ctx];
-      const requiredParams = parallelConfig.query?.required || [];
-      const optionalParams = parallelConfig.query?.optional || [];
-      const queryParams = [
-        ...requiredParams.map((param) => `${param}: string`),
-        ...optionalParams.map((param) => `${param}?: string`),
+      const requiredSearchParams = parallelConfig.query?.required || [];
+      const optionalSearchParams = parallelConfig.query?.optional || [];
+      const searchParams = [
+        ...requiredSearchParams.map((param) => `${param}: string`),
+        ...optionalSearchParams.map((param) => `${param}?: string`),
       ];
-      return `| { context: '${ctx}'; query: Record<string, string>${queryParams.length > 0 ? ` & { ${queryParams.join('; ')} }` : ''} }`;
+      return `| { context: '${ctx}'; query: Record<string, string>${searchParams.length > 0 ? ` & { ${searchParams.join('; ')} }` : ''} }`;
     })
     .join('\n    ')}
 )`;
   } else {
-    const requiredParams = config.query?.required || [];
-    const optionalParams = config.query?.optional || [];
-    const queryParams = [
-      ...requiredParams.map((param) => `${param}: string`),
-      ...optionalParams.map((param) => `${param}?: string`),
+    const requiredSearchParams = config.query?.required || [];
+    const optionalSearchParams = config.query?.optional || [];
+    const searchParams = [
+      ...requiredSearchParams.map((param) => `${param}: string`),
+      ...optionalSearchParams.map((param) => `${param}?: string`),
     ];
     queryString =
-      queryParams.length > 0
-        ? `query: Record<string, string> & ${`{ ${queryParams.join('; ')} } }`};`
+      searchParams.length > 0
+        ? `query: Record<string, string> & ${`{ ${searchParams.join('; ')} } }`};`
         : 'query?: Record<string, string> }';
   }
 
