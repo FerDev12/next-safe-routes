@@ -33,7 +33,7 @@ function getRoutes(
   for (const entry of entries) {
     if (shouldSkipEntry(entry)) continue;
 
-    let route = path.join(baseRoute, entry.name);
+    const route = path.join(baseRoute, entry.name);
 
     if (isRouteGroup(entry)) {
       handleRouteGroup(dir, entry, baseRoute, parallelContext, routesMap);
@@ -448,7 +448,7 @@ function generateRoute(route: string, config: RouteConfig) {
         : 'query?: Record<string, string> }';
   }
 
-  return `  '/${route}': {${paramsString}${queryString}${contextString}${conditionalQueryString}`;
+  return `  '${route.startsWith('/') ? route : `/${route}`}': { ${paramsString}${queryString}${contextString}${conditionalQueryString}`;
 }
 
 export function generateRoutes(pagesDir: string, outputPath: string) {
