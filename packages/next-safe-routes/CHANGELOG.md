@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.12
+
+### Patch Changes
+
+- 8412712: Added unit tests for generateRoutes function
+
 ## 0.0.11
 
 ### Patch Changes
