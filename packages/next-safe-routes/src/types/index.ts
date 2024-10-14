@@ -6,6 +6,7 @@ export type BaseRoutes = {
     params?: Params;
     query?: Query;
     context?: string;
+    locale?: string;
   };
 };
 
@@ -62,4 +63,13 @@ export type PageConfig = {
     optional?: string[];
   };
   omitFromRoutes?: boolean;
+};
+
+export type NavigationOptions = {
+  locales?: string[];
+};
+
+export type GenerateRoutesOptions = {
+  withI18N?: boolean;
+  locales?: string[];
 };

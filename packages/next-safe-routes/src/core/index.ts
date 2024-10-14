@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import * as ts from 'typescript';
-import { Params, PageConfig } from '@/types';
+import { Params, PageConfig, GenerateRoutesOptions } from '@/types';
 
 type ParallelRouteConfig = {
   params: Params;
@@ -403,13 +403,28 @@ function generateTypeDefinition() {
  */`;
 }
 
-function generateRoute(route: string, config: RouteConfig) {
-  const paramEntries = Object.entries(config.params);
+function generateRoute(
+  route: string,
+  config: RouteConfig,
+  opts?: GenerateRoutesOptions
+) {
+  const pathname = route.startsWith('/') ? route : `/${route}`;
+  const usesI18NRouting = opts?.withI18N && pathname.startsWith('/[locale]');
+
+  const unLocalizedPathname = usesI18NRouting
+    ? pathname === '/[locale]'
+      ? '/'
+      : pathname.slice(9)
+    : pathname;
+
+  const paramEntries = Object.entries(config.params).filter(
+    ([key]) => key !== 'locale'
+  );
   const paramsString =
     paramEntries.length > 0
       ? `params: { ${paramEntries
           .map(([key, type]) => `${key}: ${type}`)
-          .join('; ')} };`
+          .join('; ')} }; `
       : '';
 
   let queryString = '';
@@ -421,7 +436,7 @@ function generateRoute(route: string, config: RouteConfig) {
 
     contextString = `context: ${contexts.map((ctx) => `'${ctx}'`).join(' | ')};`;
 
-    conditionalQueryString = `} & (
+    conditionalQueryString = ` } & (
   ${contexts
     .map((ctx) => {
       const parallelConfig = config.parallelRoutes![ctx];
@@ -431,7 +446,7 @@ function generateRoute(route: string, config: RouteConfig) {
         ...requiredSearchParams.map((param) => `${param}: string`),
         ...optionalSearchParams.map((param) => `${param}?: string`),
       ];
-      return `| { context: '${ctx}'; query: Record<string, string>${searchParams.length > 0 ? ` & { ${searchParams.join('; ')} }` : ''} }`;
+      return `| { context: '${ctx}'; query${requiredSearchParams.length === 0 ? '?' : ''}: Record<string, string>${searchParams.length > 0 ? ` & { ${searchParams.join('; ')} } }` : '; }'}`;
     })
     .join('\n    ')}
 )`;
@@ -444,14 +459,25 @@ function generateRoute(route: string, config: RouteConfig) {
     ];
     queryString =
       searchParams.length > 0
-        ? `query: Record<string, string> & ${`{ ${searchParams.join('; ')} } }`};`
-        : 'query?: Record<string, string> }';
+        ? `query${requiredSearchParams.length === 0 ? '?' : ''}: Record<string, string> & ${`{ ${searchParams.join('; ')} } }`};`
+        : 'query?: Record<string, string>;';
   }
 
-  return `  '${route.startsWith('/') ? route : `/${route}`}': { ${paramsString}${queryString}${contextString}${conditionalQueryString}`;
+  const localeString = usesI18NRouting
+    ? ` locale?: ${(opts?.locales?.length ?? 0) > 0 ? opts!.locales!.map((locale) => `'${locale}'`).join(' | ') : 'string'};`
+    : '';
+
+  console.log({ conditionalQueryString });
+  const routeType = `  '${unLocalizedPathname}': { ${paramsString}${queryString}${contextString}${conditionalQueryString}${localeString} ${conditionalQueryString.length === 0 ? '}' : ''}`;
+  console.log({ routeType });
+  return routeType;
 }
 
-export function generateRoutes(pagesDir: string, outputPath: string) {
+export function generateRoutes(
+  pagesDir: string,
+  outputPath: string,
+  opts?: GenerateRoutesOptions
+) {
   try {
     const routes = getRoutes(pagesDir);
 
@@ -466,7 +492,7 @@ export type Routes = {
 ${Array.from(routes.entries())
   .filter(([, config]) => !config.omitFromRoutes)
   .sort(([routeA], [routeB]) => (routeA < routeB ? -1 : 1))
-  .map(([route, config]) => generateRoute(route, config))
+  .map(([route, config]) => generateRoute(route, config, opts))
   .join(';\n')}
 };
 

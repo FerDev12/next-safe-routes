@@ -9,18 +9,31 @@ import { logger } from '@/utils/logger';
 interface SafeRoutesConfig {
   outPath?: string;
   verbose?: boolean;
+  withI18N?: boolean;
+  locales?: string[];
 }
 
 const cache = new Map<string, boolean>();
 
-function buildRoutes(pagesDir: string, outPath: string, verbose: boolean) {
+function buildRoutes(
+  pagesDir: string,
+  outPath: string,
+  verbose: boolean,
+  opts?: {
+    withI18N: boolean;
+    locales: string[];
+  }
+) {
   if (verbose) {
     logger.info(`Generating routes from ${pagesDir} for this build`);
     logger.info(`Output file: ${outPath}`);
   }
 
   try {
-    generateRoutes(pagesDir, outPath);
+    generateRoutes(pagesDir, outPath, {
+      withI18N: opts?.withI18N,
+      locales: opts?.locales,
+    });
     logger.info('Routes generated successfully for this build.');
   } catch (error: any) {
     logger.error('Error generating routes for this build', error);
@@ -33,9 +46,16 @@ export function withNextSafeRoutes(
   safeRoutesConfig: SafeRoutesConfig = {
     outPath: 'types/routes.ts',
     verbose: false,
+    withI18N: false,
+    locales: ['en'],
   }
 ): NextConfig {
-  const { outPath = 'types/routes.ts', verbose = false } = safeRoutesConfig;
+  const {
+    outPath = 'types/routes.ts',
+    verbose = false,
+    withI18N = false,
+    locales = ['en'],
+  } = safeRoutesConfig;
 
   const nextSafeRoutesConfig: Partial<NextConfig> = {
     ...nextConfig,
@@ -60,7 +80,10 @@ export function withNextSafeRoutes(
         throw new Error(`The directory ${pagesDir} does not exist`);
       }
 
-      buildRoutes(pagesDir, outputPath, verbose);
+      buildRoutes(pagesDir, outputPath, verbose, {
+        locales,
+        withI18N,
+      });
       cache.set(buildId, true);
     }
   };

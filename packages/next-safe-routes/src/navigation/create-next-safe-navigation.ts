@@ -21,8 +21,13 @@ type CreateSafeNavigationReturnType<Routes extends BaseRoutes> = {
 
 export function createNextSafeNavigation<
   Routes extends BaseRoutes,
->(): CreateSafeNavigationReturnType<Routes> {
-  const getRoute = createGetSafeRoute<Routes>();
+  Locale extends string = string,
+>(opts?: {
+  defaultLocale?: Locale;
+  locales?: Locale[];
+  withI18N?: boolean;
+}): CreateSafeNavigationReturnType<Routes> {
+  const getRoute = createGetSafeRoute<Routes>(opts);
   const useRouter = createUseSafeRouter<Routes>();
   const redirect = createSafeRedirect<Routes>();
   const Link = createSafeLink<Routes>();

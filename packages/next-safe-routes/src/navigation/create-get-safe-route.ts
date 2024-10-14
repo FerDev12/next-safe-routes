@@ -3,8 +3,12 @@ import { BaseRoutes, Params, SpreadablePathConfig } from '@/types';
 type ParamValue = string | number | string[] | undefined;
 type Segment = 'dynamic' | 'catch-all' | 'optional-catch-all';
 
-function extractDynamicSegments(pathname: string): string[] {
-  return pathname.match(/\[(?:\[\.\.\.)?[^\]]+\](?:\])?/g) || [];
+function extractDynamicSegments(pathname: string, withI18N: boolean): string[] {
+  const segments = pathname.match(/\[(?:\[\.\.\.)?[^\]]+\](?:\])?/g) || [];
+  if (withI18N) {
+    return segments.filter((segment) => segment !== '[locale]');
+  }
+  return segments;
 }
 
 function extractParamName(segment: string): string {
@@ -107,6 +111,29 @@ function buildQueryString(
   return queryParams.toString();
 }
 
+function validateLocale(
+  withI18N: boolean,
+  locale?: string,
+  locales?: string[]
+) {
+  if (withI18N && !locale?.length && !locales?.length) {
+    throw new Error(
+      'Missing locale: but required for i18n routing. Either define the defaultLocale, pass the locales array or set the locale in the config object.'
+    );
+  }
+
+  if (
+    !!locale &&
+    !!locales &&
+    locales.length > 0 &&
+    !locales.some((l) => l === locale)
+  ) {
+    throw new Error(
+      `Invalid locale: ${locale}. Accepted values are: ${locales.join(', ')}.`
+    );
+  }
+}
+
 function validateGeneratedPath(path: string): void {
   try {
     new URL(path, 'http://example.com');
@@ -115,7 +142,22 @@ function validateGeneratedPath(path: string): void {
   }
 }
 
-export function createGetSafeRoute<Routes extends BaseRoutes>() {
+function removeTrailingSlash(pathname: string) {
+  if (pathname === '/') return pathname;
+  if (
+    pathname.length > 1 &&
+    pathname.startsWith('/') &&
+    pathname.endsWith('/')
+  ) {
+    return pathname.slice(0, pathname.length - 1);
+  }
+  return pathname;
+}
+
+export function createGetSafeRoute<
+  Routes extends BaseRoutes,
+  Locale extends string = string,
+>(opts?: { withI18N?: boolean; defaultLocale?: Locale; locales?: Locale[] }) {
   return function getRoute<Path extends keyof Routes>(
     pathname: Path,
     ...pathConfig: SpreadablePathConfig<Routes, Path>
@@ -124,7 +166,15 @@ export function createGetSafeRoute<Routes extends BaseRoutes>() {
 
     let modifiedPathname = pathname as string;
 
-    const dynamicSegments = extractDynamicSegments(modifiedPathname);
+    const locale =
+      config?.locale ?? opts?.defaultLocale ?? opts?.locales?.at(0);
+
+    validateLocale(opts?.withI18N ?? false, locale, opts?.locales);
+
+    const dynamicSegments = extractDynamicSegments(
+      modifiedPathname,
+      opts?.withI18N ?? false
+    );
 
     if (dynamicSegments.length > 0) {
       for (const segment of dynamicSegments) {
@@ -149,7 +199,9 @@ export function createGetSafeRoute<Routes extends BaseRoutes>() {
       query = buildQueryString(config.query);
     }
 
-    const finalPath = `${modifiedPathname}${query ? `?${query}` : ''}`;
+    const finalPath = removeTrailingSlash(
+      `${opts?.withI18N ? `/${locale}` : ''}${modifiedPathname}${query ? `?${query}` : ''}`
+    );
 
     // Check if the final path is a valid URL
     validateGeneratedPath(finalPath);

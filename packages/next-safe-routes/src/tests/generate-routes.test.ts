@@ -49,10 +49,14 @@ describe('generateRoutes', () => {
     expect(writeFileCall[0]).toBe(mockOutputPath);
 
     expect(writeFileCall[1]).toContain('export type Routes = {');
-    expect(writeFileCall[1]).toContain("'/': {");
-    expect(writeFileCall[1]).toContain("'/about': {");
     expect(writeFileCall[1]).toContain(
-      "'/users/[userId]': { params: { userId: string };"
+      "'/': { query?: Record<string, string>; }"
+    );
+    expect(writeFileCall[1]).toContain(
+      "'/about': { query?: Record<string, string>; }"
+    );
+    expect(writeFileCall[1]).toContain(
+      "'/users/[userId]': { params: { userId: string }; query?: Record<string, string>; }"
     );
   });
 
@@ -62,7 +66,16 @@ describe('generateRoutes', () => {
         createMockDirent('@dashboard', true),
         createMockDirent('@auth', true),
       ],
-      [`${mockPagesDir}/@dashboard`]: [createMockDirent('page.tsx', false)],
+      [`${mockPagesDir}/@dashboard`]: [
+        createMockDirent('groups', true),
+        createMockDirent('page.tsx', false),
+      ],
+      [`${mockPagesDir}/@dashboard/groups`]: [
+        createMockDirent('[groupId]', true),
+      ],
+      [`${mockPagesDir}/@dashboard/groups/[groupId]`]: [
+        createMockDirent('page.tsx', false),
+      ],
       [`${mockPagesDir}/@auth`]: [
         createMockDirent('page.tsx', false),
         createMockDirent('login', true),
@@ -72,8 +85,27 @@ describe('generateRoutes', () => {
       [`${mockPagesDir}/@auth/register`]: [createMockDirent('page.tsx', false)],
     };
 
+    console.log(mockFileSystem);
+
     setupMockFileSystem(mockFileSystem);
     fsMock.readFileSync.mockReturnValue('');
+
+    const mockConfigs = {
+      [`${mockPagesDir}/@auth/page.config.ts`]: `
+        export const config = {
+          searchParams: { required: ['q'] },
+          omitFromRoutes: false,
+        };
+      `,
+      [`${mockPagesDir}/@dashboard/groups/[groupId]/page.config.ts`]: `
+        export const config = { 
+          searchParams: { required: ['foo'], optional: ['bar'] }, 
+          omitFromRoutes: false
+        }
+      `,
+    };
+
+    setupMockConfigFiles(mockConfigs);
 
     generateRoutes(mockPagesDir, mockOutputPath);
 
@@ -81,9 +113,17 @@ describe('generateRoutes', () => {
     expect(writeFileCall[0]).toBe(mockOutputPath);
 
     expect(writeFileCall[1]).toContain('export type Routes = {');
-    expect(writeFileCall[1]).toContain("context: 'dashboard' | 'auth'");
-    expect(writeFileCall[1]).toContain("context: 'dashboard'");
-    expect(writeFileCall[1]).toContain("context: 'auth'");
+    expect(writeFileCall[1]).toContain(
+      "'/': { context: 'dashboard' | 'auth'; } & (\n" +
+        "  | { context: 'dashboard'; query?: Record<string, string>; }\n" +
+        "    | { context: 'auth'; query: Record<string, string> & { q: string } }\n" +
+        ')'
+    );
+    expect(writeFileCall[1]).toContain(
+      "'/groups/[groupId]': { params: { groupId: string }; context: 'dashboard'; } & (\n" +
+        "  | { context: 'dashboard'; query: Record<string, string> & { foo: string; bar?: string } }\n" +
+        ')'
+    );
   });
 
   it('should handle route groups', () => {
@@ -126,11 +166,17 @@ describe('generateRoutes', () => {
     expect(writeFileCall[0]).toBe(mockOutputPath);
 
     expect(writeFileCall[1]).toContain('export type Routes = {');
-    expect(writeFileCall[1]).toContain("'/about': {");
-    expect(writeFileCall[1]).toContain("'/contact': {");
-    expect(writeFileCall[1]).toContain("'/products': {");
     expect(writeFileCall[1]).toContain(
-      "'/categories/[category]': { params: { category: string };"
+      "'/about': { query?: Record<string, string>; }"
+    );
+    expect(writeFileCall[1]).toContain(
+      "'/contact': { query?: Record<string, string>; }"
+    );
+    expect(writeFileCall[1]).toContain(
+      "'/products': { query?: Record<string, string>; }"
+    );
+    expect(writeFileCall[1]).toContain(
+      "'/categories/[category]': { params: { category: string }; query?: Record<string, string>; }"
     );
   });
 
@@ -199,11 +245,80 @@ describe('generateRoutes', () => {
       "'/': { query: Record<string, string> & { q: string } }"
     );
     expect(writeFileCall[1]).toContain(
-      "'/about': { query: Record<string, string> & { filter?: string } }"
+      "'/about': { query?: Record<string, string> & { filter?: string } }"
     );
     expect(writeFileCall[1]).toContain(
       "'/products': { query: Record<string, string> & { category: string; sort?: string } }"
     );
     expect(writeFileCall[1]).not.toContain("'/products/[id]'");
+  });
+
+  it('handles i18n routing and does not set the default locales type', () => {
+    const mockFileSystem = {
+      [mockPagesDir]: [createMockDirent('[locale]', true)],
+      [`${mockPagesDir}/[locale]`]: [
+        createMockDirent('page.tsx', false),
+        createMockDirent('about', true),
+        createMockDirent('blog', true),
+      ],
+      [`${mockPagesDir}/[locale]/about`]: [createMockDirent('page.tsx', false)],
+      [`${mockPagesDir}/[locale]/blog`]: [createMockDirent('page.tsx', false)],
+    };
+
+    setupMockFileSystem(mockFileSystem);
+    fsMock.readFileSync.mockReturnValue('');
+
+    generateRoutes(mockPagesDir, mockOutputPath, {
+      withI18N: true,
+    });
+
+    const writeFileCall = fsMock.writeFileSync.mock.calls[0];
+    expect(writeFileCall[0]).toBe(mockOutputPath);
+
+    console.log(writeFileCall[1]);
+
+    expect(writeFileCall[1]).toContain('export type Routes = {');
+    expect(writeFileCall[1]).toContain(
+      "'/about': { query?: Record<string, string>; locale?: string"
+    );
+    expect(writeFileCall[1]).toContain("'/blog': {");
+  });
+
+  it('handles i18n routing and sets the default locales type', () => {
+    const mockFileSystem = {
+      [mockPagesDir]: [createMockDirent('[locale]', true)],
+      [`${mockPagesDir}/[locale]`]: [
+        createMockDirent('page.tsx', false),
+        createMockDirent('about', true),
+        createMockDirent('blog', true),
+      ],
+      [`${mockPagesDir}/[locale]/about`]: [createMockDirent('page.tsx', false)],
+      [`${mockPagesDir}/[locale]/blog`]: [
+        createMockDirent('page.tsx', false),
+        createMockDirent('[blogId]', true),
+      ],
+      [`${mockPagesDir}/[locale]/blog/[blogId]`]: [
+        createMockDirent('page.tsx', false),
+      ],
+    };
+
+    setupMockFileSystem(mockFileSystem);
+    fsMock.readFileSync.mockReturnValue('');
+
+    generateRoutes(mockPagesDir, mockOutputPath, {
+      withI18N: true,
+      locales: ['en', 'es', 'de'],
+    });
+
+    const writeFileCall = fsMock.writeFileSync.mock.calls[0];
+    expect(writeFileCall[0]).toBe(mockOutputPath);
+
+    expect(writeFileCall[1]).toContain('export type Routes = {');
+    expect(writeFileCall[1]).toContain(
+      "'/about': { query?: Record<string, string>; locale?: 'en' | 'es' | 'de'"
+    );
+    expect(writeFileCall[1]).toContain(
+      `'/blog/[blogId]': { params: { blogId: string }; query?: Record<string, string>; locale?: 'en' | 'es' | 'de'; }`
+    );
   });
 });
