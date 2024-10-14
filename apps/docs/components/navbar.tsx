@@ -17,6 +17,7 @@ import NavGetStarted from './nav-get-started';
 import dynamic from 'next/dynamic';
 import { ReactNode } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { Sponsor } from './sponsor';
 
 const VersionManager = dynamic(() => import('./version-select'), {
   ssr: false,
@@ -91,15 +92,9 @@ export function Navbar() {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
-                    href='#'
-                    className={buttonVariants({
-                      variant: 'ghost',
-                      size: 'icon',
-                    })}
-                  >
+                  <Sponsor variant='ghost' size='icon'>
                     <HeartIcon className='w-[1.1rem] h-[1.1rem] text-red-500 fill-red-500' />
-                  </Link>
+                  </Sponsor>
                 </TooltipTrigger>
                 <TooltipContent>Sponsor</TooltipContent>
               </Tooltip>
