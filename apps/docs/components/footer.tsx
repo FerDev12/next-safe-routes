@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { buttonVariants } from './ui/button';
-import { HeartIcon, HexagonIcon, TriangleIcon } from 'lucide-react';
+import { HeartIcon } from 'lucide-react';
+import { Sponsor } from './sponsor';
 
 export function Footer() {
   return (
@@ -36,14 +36,9 @@ export function Footer() {
 
 export function FooterButtons() {
   return (
-    <>
-      <Link
-        href='https://github.com/sponsors/ferdev12'
-        className={buttonVariants({ variant: 'outline', size: 'sm' })}
-      >
-        <HeartIcon className='h-4 w-4 mr-2 text-red-600 fill-current' />
-        Sponsor
-      </Link>
-    </>
+    <Sponsor variant='outline' size='sm'>
+      <HeartIcon className='h-4 w-4 mr-2 text-red-600 fill-current' />
+      Sponsor
+    </Sponsor>
   );
 }
