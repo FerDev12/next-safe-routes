@@ -1,13 +1,13 @@
 import { createGetSafeRoute } from '../navigation/create-get-safe-route';
 import { expect, test } from 'vitest';
 
-const getRoute = createGetSafeRoute();
-
 test('Handles route without dynamic params', () => {
+  const getRoute = createGetSafeRoute();
   expect(getRoute('/posts')).toEqual('/posts');
 });
 
 test('Handles route with dynamic params', () => {
+  const getRoute = createGetSafeRoute();
   const route = getRoute('/posts/[postId]', {
     params: {
       postId: '123',
@@ -17,6 +17,7 @@ test('Handles route with dynamic params', () => {
 });
 
 test('Handles route with catch-all params', () => {
+  const getRoute = createGetSafeRoute();
   const path = '/auth/sign-in/[...provider]';
   const routeWithParam = getRoute(path, {
     params: {
@@ -33,6 +34,7 @@ test('Handles route with catch-all params', () => {
 });
 
 test('Handles route with optional catch-all params', () => {
+  const getRoute = createGetSafeRoute();
   const path = '/auth/sign-in/[[...provider]]';
   const routeWithoutParams = getRoute(path, {
     params: {},
@@ -56,6 +58,7 @@ test('Handles route with optional catch-all params', () => {
 });
 
 test('Adds query paramters', () => {
+  const getRoute = createGetSafeRoute();
   const route = getRoute('/test', {
     query: {
       foo: 'bar',
@@ -66,6 +69,7 @@ test('Adds query paramters', () => {
 });
 
 test('throws an error when a required parameter is missing', () => {
+  const getRoute = createGetSafeRoute();
   try {
     expect(getRoute('/profiles/[profileId]')).toThrowError();
   } catch (err: any) {
@@ -74,6 +78,7 @@ test('throws an error when a required parameter is missing', () => {
 });
 
 test('Allows for empty optional-catch-all param', () => {
+  const getRoute = createGetSafeRoute();
   const route = getRoute('/auth/sign-in/[[...provider]]');
   expect(route).toEqual('/auth/sign-in');
 });
