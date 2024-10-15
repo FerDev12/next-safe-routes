@@ -2,11 +2,11 @@
   "name": "next-safe-routes",
   "private": true,
   "scripts": {
-    "build": "turbo build",
+    "build": "turbo build && pnpm format",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "test": "pnpm format:check && turbo run build lint && turbo run test",
+    "test": "pnpm format:check && turbo run lint && turbo run build && turbo run test",
     "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
     "publish-packages": "turbo run build lint && turbo run test && changeset version && changeset publish"
   },
