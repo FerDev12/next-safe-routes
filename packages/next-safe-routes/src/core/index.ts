@@ -305,6 +305,7 @@ function getPageConfig(filePath: string): PageConfig | undefined {
 
     return pageConfig;
   } catch (error) {
+    // eslint-disable-next-line no-undef
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
       console.error(`Error reading page config file ${filePath}:`, error);
     }

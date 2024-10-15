@@ -6,7 +6,9 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "publish-packages": "turbo run build && turbo run lint && changeset version && changeset publish"
+    "test": "pnpm format:check && turbo build lint test",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md}\"",
+    "publish-packages": "turbo run build lint test && changeset version && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.9",

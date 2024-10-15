@@ -1,0 +1,14 @@
+node_modules
+.turbo
+
+pnpm-lock.yaml
+pnpm-workspace.yaml
+
+.next/
+out/
+dist
+build
+
+coverage
+
+CHANGELOG.md

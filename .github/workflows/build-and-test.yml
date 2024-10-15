@@ -29,7 +29,7 @@ jobs:
         run: pnpm turbo run install-browsers --filter=e2e
 
       - name: Build and Test
-        run: pnpm turbo run build && pnpm turbo run test
+        run: pnpm test
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

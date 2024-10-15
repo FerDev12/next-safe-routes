@@ -68,7 +68,9 @@ test('Adds query paramters', () => {
 test('throws an error when a required parameter is missing', () => {
   try {
     expect(getRoute('/profiles/[profileId]')).toThrowError();
-  } catch (err: any) {}
+  } catch (err: any) {
+    expect(err).not.toBeNull();
+  }
 });
 
 test('Allows for empty optional-catch-all param', () => {

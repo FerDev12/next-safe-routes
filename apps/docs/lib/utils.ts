@@ -1,6 +1,6 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { EachRoute, getRoutesForVersion, Version } from "./routes-config";
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import { EachRoute, getRoutesForVersion, Version } from './routes-config';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -44,40 +44,40 @@ export function advanceSearch(query: string, v: Version) {
   const routes = getRoutesForVersion(v);
   return routes
     .map((node) =>
-      helperSearch(query, node, "", 1, query.length == 0 ? 2 : undefined)
+      helperSearch(query, node, '', 1, query.length == 0 ? 2 : undefined)
     )
     .flat();
 }
 
 // Thursday, May 23, 2024
 export function formatDate(dateStr: string): string {
-  const [day, month, year] = dateStr.split("-").map(Number);
+  const [day, month, year] = dateStr.split('-').map(Number);
   const date = new Date(year, month - 1, day);
 
   const options: Intl.DateTimeFormatOptions = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   };
 
-  return date.toLocaleDateString("en-US", options);
+  return date.toLocaleDateString('en-US', options);
 }
 
 //  May 23, 2024
 export function formatDate2(dateStr: string): string {
-  const [day, month, year] = dateStr.split("-").map(Number);
+  const [day, month, year] = dateStr.split('-').map(Number);
   const date = new Date(year, month - 1, day);
 
   const options: Intl.DateTimeFormatOptions = {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   };
-  return date.toLocaleDateString("en-US", options);
+  return date.toLocaleDateString('en-US', options);
 }
 
 export function stringToDate(date: string) {
-  const [day, month, year] = date.split("-").map(Number);
+  const [day, month, year] = date.split('-').map(Number);
   return new Date(year, month - 1, day);
 }
