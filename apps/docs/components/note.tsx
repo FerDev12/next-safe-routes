@@ -1,4 +1,9 @@
-import { AlertTriangleIcon, CheckCheckIcon, InfoIcon, OctagonAlertIcon } from 'lucide-react';
+import {
+  AlertTriangleIcon,
+  CheckCheckIcon,
+  InfoIcon,
+  OctagonAlertIcon,
+} from 'lucide-react';
 import { PropsWithChildren } from 'react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 

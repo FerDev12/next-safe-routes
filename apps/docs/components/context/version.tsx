@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import { createContext, PropsWithChildren, useContext, useState } from 'react';
 
-import { availableVersions, Version } from "@/lib/routes-config";
+import { availableVersions, Version } from '@/lib/routes-config';
 
 type VersionContextType = {
   currentVersion: Version;
@@ -11,7 +11,7 @@ type VersionContextType = {
 
 const VersionContext = createContext<VersionContextType | null>(null);
 
-const localStorageVersionKey = "_version";
+const localStorageVersionKey = '_version';
 
 export default function VersionContextProvider({
   children,
@@ -35,6 +35,6 @@ export default function VersionContextProvider({
 
 export function useVersion() {
   const val = useContext(VersionContext);
-  if (!val) throw new Error("The component not wrapped to Version context...");
+  if (!val) throw new Error('The component not wrapped to Version context...');
   return val;
 }

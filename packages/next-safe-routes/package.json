@@ -11,7 +11,8 @@
   "scripts": {
     "build": "rimraf ./dist && tsup",
     "dev": "tsup --watch",
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "eslint . --max-warnings 0"
   },
   "bin": {
     "generate-routes": "./dist/cli/index.js"

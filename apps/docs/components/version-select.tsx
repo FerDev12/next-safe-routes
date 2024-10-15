@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Select,
@@ -6,18 +6,18 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   availableVersions,
   getRoutesFlatten,
   Version,
-} from "@/lib/routes-config";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useVersion } from "./context/version";
+} from '@/lib/routes-config';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useVersion } from './context/version';
 
 function isPathSameVersion(path: string, v: Version) {
-  return path.split("/")[2] == v;
+  return path.split('/')[2] == v;
 }
 
 export default function VersionManager() {
@@ -29,7 +29,7 @@ export default function VersionManager() {
     // can be made more complex by moving to same page on other version if exist or parent of that section or first page
     // currently by default moves to first page
     if (
-      !pathname.startsWith("/docs") ||
+      !pathname.startsWith('/docs') ||
       isPathSameVersion(pathname, currentVersion)
     )
       return;
@@ -43,10 +43,10 @@ export default function VersionManager() {
       value={currentVersion}
       onValueChange={(v: Version) => changeVersion(v)}
     >
-      <SelectTrigger className="sm:w-fit w-full border-none font-code font-medium bg-muted rounded-full text-xs h-8 pl-5">
-        <SelectValue placeholder="Version" />
+      <SelectTrigger className='sm:w-fit w-full border-none font-code font-medium bg-muted rounded-full text-xs h-8 pl-5'>
+        <SelectValue placeholder='Version' />
       </SelectTrigger>
-      <SelectContent side="bottom" className="font-code">
+      <SelectContent side='bottom' className='font-code'>
         {availableVersions.map((v) => (
           <SelectItem key={v} value={v}>
             {v}
