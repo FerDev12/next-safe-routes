@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.13
+
+### Patch Changes
+
+- c202b8d: Add test cases for unit-tests
+
 ## 0.0.12
 
 ### Patch Changes
