@@ -4,7 +4,7 @@ import * as ts from 'typescript';
 import { Params, PageConfig } from '@/types';
 
 type ParallelRouteConfig = {
-  params: Params;
+  params: RouteParams;
   query?: {
     required?: string[];
     optional?: string[];
@@ -13,7 +13,7 @@ type ParallelRouteConfig = {
 };
 
 type RouteConfig = {
-  params: Params;
+  params: RouteParams;
   query?: {
     required?: string[];
     optional?: string[];
@@ -161,8 +161,17 @@ function normalizeRoutePath(route: string): string {
     .replace(/\[([^\]]+)\]/g, '[$1]');
 }
 
-function getRouteParams(routePath: string): Params {
-  const params: Params = {};
+type RouteParams = {
+  required: Params;
+  optional: Params;
+};
+
+function getRouteParams(routePath: string): RouteParams {
+  const params: RouteParams = {
+    required: {},
+    optional: {},
+  };
+
   const segments = routePath.split('/');
 
   segments.forEach((segment) => {
@@ -172,14 +181,14 @@ function getRouteParams(routePath: string): Params {
       if (paramName.startsWith('...')) {
         // Catch-all
         paramName = paramName.slice(3);
-        params[paramName] = 'string[]';
+        params.required[paramName] = 'string[]';
       } else if (paramName.startsWith('[...') && paramName.endsWith(']')) {
         // Optional-catch-all
         paramName = paramName.slice(4, -1);
-        params[paramName] = 'string[] | undefined';
+        params.optional[paramName] = 'string[]';
       } else {
         // Normal dynamic segment
-        params[paramName] = 'string';
+        params.required[paramName] = 'string';
       }
     }
   });
@@ -305,7 +314,6 @@ function getPageConfig(filePath: string): PageConfig | undefined {
 
     return pageConfig;
   } catch (error) {
-    // eslint-disable-next-line no-undef
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
       console.error(`Error reading page config file ${filePath}:`, error);
     }
@@ -405,12 +413,20 @@ function generateTypeDefinition() {
 }
 
 function generateRoute(route: string, config: RouteConfig) {
-  const paramEntries = Object.entries(config.params);
-  const paramsString =
-    paramEntries.length > 0
-      ? `params: { ${paramEntries
-          .map(([key, type]) => `${key}: ${type}`)
-          .join('; ')} };`
+  const pathname = route.startsWith('/') ? route : `/${route}`;
+
+  const requiredParamEntries = Object.entries(config.params.required);
+  const optionalParamEntries = Object.entries(config.params.optional);
+
+  const hasRequiredParams = requiredParamEntries.length > 0;
+  const hasOptionalParams = optionalParamEntries.length > 0;
+  const paramsString = hasRequiredParams
+    ? `params: { ${requiredParamEntries
+        .map(([key, type]) => `${key}: ${type}`)
+        .concat(optionalParamEntries.map(([key, type]) => `${key}?: ${type}`))
+        .join('; ')} }; `
+    : hasOptionalParams
+      ? `params?: { ${optionalParamEntries.map(([key, type]) => `${key}?: ${type}`).join('; ')} }; `
       : '';
 
   let queryString = '';
@@ -422,7 +438,7 @@ function generateRoute(route: string, config: RouteConfig) {
 
     contextString = `context: ${contexts.map((ctx) => `'${ctx}'`).join(' | ')};`;
 
-    conditionalQueryString = `} & (
+    conditionalQueryString = ` } & (
   ${contexts
     .map((ctx) => {
       const parallelConfig = config.parallelRoutes![ctx];
@@ -432,7 +448,7 @@ function generateRoute(route: string, config: RouteConfig) {
         ...requiredSearchParams.map((param) => `${param}: string`),
         ...optionalSearchParams.map((param) => `${param}?: string`),
       ];
-      return `| { context: '${ctx}'; query: Record<string, string>${searchParams.length > 0 ? ` & { ${searchParams.join('; ')} }` : ''} }`;
+      return `| { context: '${ctx}'; query${requiredSearchParams.length === 0 ? '?' : ''}: Record<string, string>${searchParams.length > 0 ? ` & { ${searchParams.join('; ')} } }` : '; }'}`;
     })
     .join('\n    ')}
 )`;
@@ -445,11 +461,12 @@ function generateRoute(route: string, config: RouteConfig) {
     ];
     queryString =
       searchParams.length > 0
-        ? `query: Record<string, string> & ${`{ ${searchParams.join('; ')} } }`};`
-        : 'query?: Record<string, string> }';
+        ? `query${requiredSearchParams.length === 0 ? '?' : ''}: Record<string, string> & ${`{ ${searchParams.join('; ')} } }`};`
+        : 'query?: Record<string, string>;';
   }
 
-  return `  '${route.startsWith('/') ? route : `/${route}`}': { ${paramsString}${queryString}${contextString}${conditionalQueryString}`;
+  const routeType = `  '${pathname}': { ${paramsString}${queryString}${contextString}${conditionalQueryString} ${conditionalQueryString.length === 0 ? '}' : ''}`;
+  return routeType;
 }
 
 export function generateRoutes(pagesDir: string, outputPath: string) {
