@@ -1,6 +1,6 @@
 {
   "name": "next-safe-routes",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Type-Safe navigation for Next.js.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
