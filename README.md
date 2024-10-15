@@ -54,14 +54,18 @@
 You can add extra information to your generated Routes type in a per-page basis by adding a
 page.config.ts file in the same folder as the page you want to modify:
 
-- src
-  - app
-    - page.tsx
-    - profile
-      - page.tsx
-      - page.config.ts
-  - components
-    - ui
+```
+src
+└── app
+    ├── page.tsx
+    ├── profile
+    │   ├── page.tsx
+    │   └── page.config.ts
+    └── posts
+        └── [postId]
+            ├── page.tsx
+            └── page.config.ts
+```
 
 ```ts
 type PageConfig = {
