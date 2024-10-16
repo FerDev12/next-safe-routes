@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.15
+
+### Patch Changes
+
+- e4dcdd1: Update README
+
 ## 0.0.14
 
 ### Patch Changes
