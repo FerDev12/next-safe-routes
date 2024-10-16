@@ -1,5 +1,12 @@
 # e2e
 
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies [ffccb74]
+  - next-safe-routes@0.0.14
+
 ## 0.1.13
 
 ### Patch Changes
