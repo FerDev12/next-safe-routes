@@ -1,102 +1,90 @@
 # Next Safe Routes
 
-> Type-safe navigation for Next.js
+**Type Safe Navigation for Next.js**
 
-## Quickstart
+## Why Next Safe Routes?
 
-> Next Safe Routes requires you having a Next.js app version >= 13.0.0 and TypeScript installed as a dev dependency.
+In the world of web development, navigation is the backbone of user experience. But as your Next.js application grows, so does the complexity of managing routes. Have you ever:
 
-1. Install next-safe-routes
+- Mistyped a URL, turning `/posts` into `/post`?
+- Forgotten to set crucial search parameters?
+- Wished for autocomplete when working with dynamic routes?
 
-   ```bash
+If you've faced these challenges, you're not alone. While Next.js provides powerful navigation utilities like `Link`, `useRouter`, `useSearchParams`, and `useParams`, they lack one crucial feature: type safety.
+
+That's where Next Safe Routes steps in.
+
+## What is Next Safe Routes?
+
+Next Safe Routes is a lightweight, type-safe wrapper around Next.js navigation utilities. It's designed to enhance your development experience by providing:
+
+1. **Automatic Route Type Generation**: Our tool analyzes your `app` directory to create a comprehensive `Routes` type, capturing all your application's routes, including their parameters and search params.
+
+2. **Type-Safe Navigation Utilities**: We provide a set of navigation utilities that leverage the `Routes` type, offering you type safety and autocompletion when navigating between pages.
+
+## Key Features
+
+- **Full App Router Support**: Works seamlessly with Next.js 13+ App Router, including support for parallel routes, grouped routes, and dynamic parameters.
+- **Type-Safe Navigation**: Eliminate typos and ensure all required parameters are provided at compile-time.
+- **Autocomplete for Routes**: Enjoy IDE suggestions for your application's routes and their parameters.
+- **Lightweight**: Minimal runtime overhead.
+- **Easy Integration**: Simple setup process that integrates smoothly into your existing Next.js project.
+
+## How It Works
+
+Next Safe Routes operates in two main steps:
+
+1. **Route Analysis**: Our script scans your `app` directory, parsing file structures to generate a comprehensive `Routes` type. This type encapsulates all your application's routes, along with their respective parameters and search params. See [Generate Routes](/docs/beta/generate-routes) for more information.
+
+2. **Navigation Utilities**: We provide type-safe wrappers around Next.js navigation functions. These utilities use the generated `Routes` type to offer type checking and autocompletion as you navigate your app. See [Navigation](/docs/beta/navigation) for more information
+
+## Quick Start
+
+1. Installation
+
+   ```
    npm install next-safe-routes
-   # or
-   yarn add next-safe-routes
-   # or
-   pnpm add next-safe-routes
    ```
 
-2. Add the Next.js plugin provided by Next Safe Routes
+2. withNextSaferoutes
 
-   ```mjs
+   ```js
+   // next.config.mjs
+
    import { withNextSafeRoutes } from 'next-safe-routes/plugin';
 
    /** @type {import('next').NextConfig} */
    const nextConfig = withNextSafeRoutes({
-     // The rest of your next.config.
+     // The rest of your next.config
    });
 
    export default nextConfig;
    ```
 
-3. Build your project
+3. Build your project to generate your Routes type
 
-   _This will generate a route.ts file at src/types/routes.ts that exports the type Routes_
-
-   > Next Safe Routes currently does not support the use of turbopack. Consider using the CLI tool <code>npm run generate-routes</code> or running <code>npm run build</code> before starting your dev server if you are using turbopack.
+   > This will generate a new file at src/types/routes.ts
 
    ```bash
-   npm run dev
-   # or
    npm run build
+   # or
+   npm run dev
    ```
 
-4. Create your navigation utils
+4. Create your navigation utilities
 
    _We recommend creating a navigation.ts file at the root of your src directory_
 
    ```ts
+   // navigation.ts
+
    import { createNextSafeNavigation } from 'next-safe-routes';
+   // Import your generated Routes type
    import { Routes } from './types/routes';
 
    export const { getRoute, Link, useRouter, redirect } =
      createNextSafeNavigation<Routes>();
    ```
-
-## Page Config
-
-You can add extra information to your generated Routes type in a per-page basis by adding a
-page.config.ts file in the same folder as the page you want to modify:
-
-```
-src
-└── app
-    ├── page.tsx
-    ├── profile
-    │   ├── page.tsx
-    │   └── page.config.ts
-    └── posts
-        └── [postId]
-            ├── page.tsx
-            └── page.config.ts
-```
-
-```ts
-type PageConfig = {
-  searchParams?: {
-    required?: string[];
-    optional?: string[];
-  };
-  // If you want to hide your route and not make it routable through
-  // next-safe-routes you can set omitFromRoutes = true.
-  // This will filter-out any route from the generated Routes type.
-  omitFromRoutes?: boolean;
-};
-```
-
-```ts
-// src/app/profile/page.config.ts
-
-import type { PageConfig } from 'next-safe-routes';
-
-export const config: PageConfig = {
-  searchParams: {
-    // You can make search-parameters required when navigating to a route
-    required: ['foo', 'bar'],
-    optional: ['cat', 'dog'],
-  },
-};
-```
 
 ## Example Usage
 
@@ -115,79 +103,6 @@ export const config: PageConfig = {
 ### \<Link>
 
 ![Link example GIF](https://next-safe-routes.vercel.app/link-example.gif)
-
-## Routes
-
-example Routes type generated by next-safe-routes
-
-```ts
-export type Routes = {
-  '/': { query?: Record<string, string> };
-  '/profile': {
-    query: Record<string, string> & {
-      foo: string;
-      bar: string;
-      cat?: string;
-      dog?: string;
-    };
-  };
-  '/posts/[postId]': {
-    params: {
-      postId: string;
-      query?: Record<string, string>;
-    };
-  };
-};
-```
-
-## Generate Routes
-
-There are two ways of generating your Routes type:
-
-1. Using the provided Next.js plugin
-
-   ```mjs
-   import { withNextSafeRoutes } from 'next-safe-routes/plugin';
-
-   /** @type {import('next').NextConfig} */
-   const nextConfig = withNextSafeRoutes({
-     // The rest of your next.config.
-   });
-
-   export default nextConfig;
-   ```
-
-2. Or running the command
-   ```bash
-   npm run generate-routes
-   ```
-
-By default both will generate a file at src/types/routes.ts or types/routes.ts if you're not using the src directory.
-
-To change the output path you can pass an options object to the plugin:
-
-```mjs
-import { withNextSafeRoutes } from 'next-safe-routes/plugin';
-
-/** @type {import('next').NextConfig} */
-const nextConfig = withNextSafeRoutes(
-  {
-    // The rest of your next.config.
-  },
-  {
-    outPath: 'src/lib/types/generated-routes.ts',
-    verbose: true,
-  }
-);
-
-export default nextConfig;
-```
-
-Or pass flags to the cli command:
-
-```bash
-npm run generate-routes --out=src/lib/types/generated-routes.ts --v=true
-```
 
 ## Documentation
 
