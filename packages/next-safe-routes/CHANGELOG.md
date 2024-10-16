@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.0.14
+
+### Patch Changes
+
+- ffccb74: Update docs and README, and point package to homepage
+
 ## 0.0.13
 
 ### Patch Changes
