@@ -3,7 +3,9 @@ title: createNextSafeNavigation
 description: Learn how to create all your routing utils with createNextSafeNavigation
 ---
 
-We recommend creating and exporting your routing utilities in a file called navigation.ts at the root of your src directory. Althoug you can name it and place it wherever you want.
+## Basic Usage
+
+We recommend creating and exporting your routing utilities in a file called navigation.ts at the root of your src directory, although you can name it and place it wherever you prefer.
 
 ```ts
 // navigation.ts
@@ -15,15 +17,32 @@ export const { getRoute, Link, useRouter, redirect } =
   createNextSafeNavigation<Routes>();
 ```
 
-The Routes type parameter is optional but highly recommended to provide type-safety for each route of your application.
+This setup creates four main routing utilities:
+
+- `getRoute`: A function to generate type-safe route strings
+- `Link`: A type-safe wrapper around Next.js's `Link` component
+- `useRouter`: A hook providing type-safe routing methods
+- `redirect`: A type-safe server-side redirect function
+
+## The Routes Type Parameter
+
+The `Routes` type parameter is optional but highly recommended to provide type safety for each route in your application. This type is typically generated automatically based on your project's file structure.
 
 See [generate routes](/beta/docs/generate-routes) for more information about generating your projects Routes type.
 
-## What happens if I ommit the Routes type?
+## Type Safety Benefits
 
-The answer is that you loose type-safety. Without the generated Routes type your navigation utilities will have no information to infer your routes.
+When you provide the `Routes` type to `createNextSafeNavigation`, you get several benefits:
 
-On the bright side it will still provide some safety-features:
+1. **Route Validation**: Ensures that you're only using routes that actually exist in your application.
+2. **Parameter Type Checking**: Verifies that all required parameters are provided and are of the correct type.
+3. **Autocompletion**: Your IDE can provide autocompletion for route paths and parameter names.
+
+## What Happens If I Omit the Routes Type?
+
+If you omit the `Routes` type, you lose full type safety. Without the generated `Routes` type, your navigation utilities will have no information to infer your routes at compile time.
+
+However, even without the `Routes` type, Next Safe Routes still provides some safety features at runtime:
 
 ```ts
 import { createNextSafeNavigation } from 'next-safe-routes';
@@ -35,4 +54,15 @@ const { getRoute, ...otherUtilities } = createNextSafeNavigation();
 getRoute('/products/[productId]');
 ```
 
-On the example above we entered a route that takes in the dynamic parameter "productId" but we omitted passing it in the pathConfig argument. This will throw an error indicating that the parameter is required.
+In this example, we've entered a route that requires a dynamic parameter "productId", but we've omitted passing it in the `pathConfig` argument. This will throw a runtime error indicating that the parameter is required.
+
+While this runtime check is helpful, it's not as powerful as the compile-time checks you get when using the `Routes` type. With the `Routes` type, this error would be caught at compile time, preventing the issue before your code even runs.
+
+## Best Practices
+
+1. **Always use the Routes type**: Generate and use the `Routes` type to get the full benefits of Next Safe Routes.
+2. **Keep Routes type updated**: Regenerate your `Routes` type whenever you add or modify routes in your application.
+3. **Use in a central location**: Create your navigation utilities in a central file and import them throughout your application for consistent usage.
+4. **Leverage autocompletion**: Take advantage of the autocompletion provided by your IDE to explore available routes and parameters.
+
+By using `createNextSafeNavigation` with a generated `Routes` type, you can ensure type-safe routing throughout your Next.js application, catching potential errors at compile-time and improving overall code quality and developer experience.

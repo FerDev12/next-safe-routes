@@ -1,8 +1,109 @@
 ---
 title: <Link />
-description: A type-safe Link extending Next.js native Link element.
+description: The Link component in Next Safe Routes is a type-safe extension of Next.js's native Link component. It provides all the functionality of the original component, but with added type safety for your application's routes.
 ---
 
-## Example Usage
+## Basic Usage
+
+Here's a simple example of how to use the Link component:
+
+```tsx
+import { Link } from './navigation.ts';
+
+export function Component() {
+  return (
+    <Link
+      href={{
+        pathname: '/products/[productId]',
+        params: { productId: '123' },
+        query: { foo: 'bar' },
+      }}
+    >
+      Go to product
+    </Link>
+  );
+}
+```
+
+In this example, `Link` is used to create a clickable link to a product page with a specific ID and query parameter.
+
+## Key Features
+
+1. **Type-Safe Navigation**: The `href` prop is type-safe, ensuring that you're using valid routes and providing the correct parameters.
+2. **Autocomplete Support**: Enjoy IDE autocomplete for your routes, params, and query parameters.
+3. **Compile-Time Checks**: Catch routing errors during development instead of at runtime.
+4. **Familiar API**: If you're familiar with Next.js's `Link`, you'll feel right at home with this enhanced version.
+
+## Advanced Usage
+
+The `Link` component from Next Safe Routes extends the functionality of Next.js's native `Link`. Here's an example showcasing more of its features:
+
+```tsx
+import { Link } from './navigation';
+
+export function AdvancedNavigation() {
+  return (
+    <nav>
+      <Link href='/home'>Home</Link>
+
+      <Link
+        href={{
+          pathname: '/blog/[slug]',
+          params: { slug: 'my-first-post' },
+          query: { source: 'navbar' },
+        }}
+        prefetch={false}
+      >
+        Latest Blog Post
+      </Link>
+
+      <Link
+        href={{
+          pathname: '/products/[category]/[id]',
+          params: { category: 'electronics', id: '12345' },
+        }}
+        replace
+      >
+        Featured Product
+      </Link>
+
+      <Link
+        href={{
+          pathname: '/search',
+          query: { q: 'nextjs', page: '1' },
+        }}
+        scroll={false}
+      >
+        Search Results
+      </Link>
+    </nav>
+  );
+}
+```
+
+This example demonstrates various `Link` props including `prefetch`, `replace`, and `scroll`, along with different ways to specify the `href`.
+
+## Example in Action
+
+Here's a visual representation of the `Link` component in action that demonstrates how the `Link` component provides autocompletion and type checking as you type, helping to prevent errors and improve developer productivity:
 
 ![link example GIF](/link-example.gif)
+
+## Props
+
+The `Link` component accepts all props from Next.js's native `Link` component, plus some additional type-safe props:
+
+- `href`: An object with `pathname`, `params`, and `query` properties, or a string for simple routes.
+- `prefetch`: Boolean to control prefetching behavior (default: `true`).
+- `replace`: Boolean to replace the current history entry instead of adding a new one (default: `false`).
+- `scroll`: Boolean to control scrolling to the top of the page after navigation (default: `true`).
+
+## Best Practices
+
+1. **Use for Internal Navigation**: Use `Link` for all internal navigation within your Next.js application.
+2. **Leverage Type Safety**: Take advantage of the type safety provided by `Link` to catch potential routing errors early in development.
+3. **Prefetch Important Routes**: Use the `prefetch` prop for routes that are likely to be navigated to, improving the perceived performance of your application.
+4. **Consider SEO**: Use descriptive text within your `Link` components to improve SEO.
+5. **Keep Routes Updated**: Ensure your Routes type is up-to-date with your actual application routes for the best type-safety experience.
+
+By using the `Link` component from Next Safe Routes, you can ensure type-safe navigation throughout your Next.js application, improving code quality and developer experience.

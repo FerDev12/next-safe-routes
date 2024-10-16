@@ -1,11 +1,33 @@
 ---
-title: Navigation
-description: Next Safe Routes helps you navigate through your app with safety by providing a set of navigation utilities that work with your generated Routes type to create type-safe route inference.
+title: Navigation Utilities
+description: Explore the type-safe navigation utilities provided by Next Safe Routes for your Next.js application.
 ---
 
-<Note title='Ommitting Routes Type' type='info'>
-  While the navigation utilities are meant to work with the Routes type, you can
-  choose to omit passing the Routes type parameter when creating your utilities.
-  This will not provide any type-safety but it will provide runtime errors if it
-  is not capabe of parsing the route data you entered.
-</Note>
+# Navigation Utilities
+
+Next Safe Routes provides a set of powerful, type-safe navigation utilities that enhance your Next.js development experience. These utilities are designed to work seamlessly with your application's route structure, offering robust type checking and autocompletion for all your routes.
+
+## Overview
+
+The navigation module is the core of Next Safe Routes. It allows you to create a set of type-safe navigation utilities based on your application's unique route structure. Here's how you set up these utilities:
+
+```ts
+import type { Routes } from './types/routes';
+import { createNextSafeNavigation } from 'next-safe-routes';
+
+export const { getRoute, useRouter, redirect, Link } =
+  createNextSafeNavigation<Routes>();
+```
+
+By importing your generated `Routes` type and passing it to `createNextSafeNavigation`, you create a suite of navigation utilities that are tailored to your specific application structure. This approach ensures that all your navigation operations are type-safe and aligned with your actual route configuration.
+
+## Key Features
+
+- **Type-Safe Route Generation**: The `getRoute` function ensures you're always creating valid routes, catching potential errors at run-time.
+- **Enhanced Router Hook**: The `useRouter` hook provides type-safe access to routing methods and parameters.
+- **Server-Side Redirection**: The `redirect` function enables type-safe server-side redirects.
+- **Type-Safe Link Component**: The `Link` component is a wrapper around Next.js's `Link` with added type safety for href props.
+
+These utilities work in concert to provide a comprehensive, type-safe navigation solution for your Next.js application. They help prevent common errors such as typos in route paths or missing required parameters, catching these issues during development rather than at runtime.
+
+In the following sections, we'll explore each of these utilities in detail, demonstrating their features and how to use them effectively in your Next.js projects.

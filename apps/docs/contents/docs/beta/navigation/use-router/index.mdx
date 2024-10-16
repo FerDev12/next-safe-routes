@@ -1,6 +1,6 @@
 ---
 title: useRouter
-description: A type-safe extension to Next.js useRouter hook.
+description: The `useRouter` hook is a type-safe extension of Next.js's native `useRouter` hook. It provides all the functionality of the original hook, but with added type safety for your application's routes.
 ---
 
 <Note title='Environment' type='warning'>
@@ -8,6 +8,43 @@ description: A type-safe extension to Next.js useRouter hook.
   navigation consider using [redirect](/docs/beta/navigation/redirect).
 </Note>
 
-## Example Usage
+```tsx
+'use client';
+
+import { useRouter } from './navigation.ts';
+
+export function Component() {
+  const router = useRouter();
+
+  const onClick = () => {
+    router.push('/products/[productId]', {
+      params: {
+        productId: '123',
+      },
+      query: {
+        foo: 'bar',
+      },
+    });
+  };
+
+  return <button onClick={onClick}>Go to Product</button>;
+}
+```
+
+In this example, `useRouter` is used to navigate to a product page with a specific ID and query parameter.
+
+## Key Features
+
+1. **Type-Safe Navigation**: The `push`, `replace`, and `prefetch` methods are type-safe, ensuring that you're using valid routes and providing the correct parameters.
+2. **Autocomplete Support**: Enjoy IDE autocomplete for your routes, params, and query parameters.
+3. **Compile-Time Checks**: Catch routing errors during development instead of at runtime.
+4. **Familiar API**: If you're familiar with Next.js's `useRouter`, you'll feel right at home with this enhanced version.
+5. **Keep Routes Updated**: Ensure your Routes type is up-to-date with your actual application 5.routes for the best type-safety experience.
+
+## Example in Action
+
+Here's a visual representation of `useRouter` in action that demonstrates how `useRouter` provides autocompletion and type checking as you type, helping to prevent errors and improve developer productivity:
 
 ![useRouter example GIF](/use-router-example.gif)
+
+By using the `useRouter` hook from Next Safe Routes, you can ensure type-safe client-side navigation throughout your Next.js application, improving code quality and developer experience.

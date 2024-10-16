@@ -1,10 +1,46 @@
 ---
-title: Type-Safe Navigation For Next.js.
-description: Next Safe Routes is your best option if your project has a large number of pages and you require safety when navigating between these pages.
+title: Next Safe Routes - Type-Safe Navigation For Next.js
+description: Elevate your Next.js project with Next Safe Routes - the ultimate solution for type-safe navigation in large-scale applications.
 ---
 
-Type Safe Navigation for you Next.js app.
+## Why Next Safe Routes?
+
+In the world of web development, navigation is the backbone of user experience. But as your Next.js application grows, so does the complexity of managing routes. Have you ever:
+
+- Mistyped a URL, turning `/posts` into `/post`?
+- Forgotten to set crucial search parameters?
+- Wished for autocomplete when working with dynamic routes?
+
+If you've faced these challenges, you're not alone. While Next.js provides powerful navigation utilities like `Link`, `useRouter`, `useSearchParams`, and `useParams`, they lack one crucial feature: type safety.
+
+That's where Next Safe Routes steps in.
+
+## What is Next Safe Routes?
+
+Next Safe Routes is a lightweight, type-safe wrapper around Next.js navigation utilities. It's designed to enhance your development experience by providing:
+
+1. **Automatic Route Type Generation**: Our tool analyzes your `app` directory to create a comprehensive `Routes` type, capturing all your application's routes, including their parameters and search params.
+
+2. **Type-Safe Navigation Utilities**: We provide a set of navigation utilities that leverage the `Routes` type, offering you type safety and autocompletion when navigating between pages.
+
+## Key Features
+
+- **Full App Router Support**: Works seamlessly with Next.js 13+ App Router, including support for parallel routes, grouped routes, and dynamic parameters.
+- **Type-Safe Navigation**: Eliminate typos and ensure all required parameters are provided at compile-time.
+- **Autocomplete for Routes**: Enjoy IDE suggestions for your application's routes and their parameters.
+- **Lightweight**: Minimal runtime overhead.
+- **Easy Integration**: Simple setup process that integrates smoothly into your existing Next.js project.
+
+## How It Works
+
+Next Safe Routes operates in two main steps:
+
+1. **Route Analysis**: Our script scans your `app` directory, parsing file structures to generate a comprehensive `Routes` type. This type encapsulates all your application's routes, along with their respective parameters and search params. See [Generate Routes](/docs/beta/generate-routes) for more information.
+
+2. **Navigation Utilities**: We provide type-safe wrappers around Next.js navigation functions. These utilities use the generated `Routes` type to offer type checking and autocompletion as you navigate your app. See [Navigation](/docs/beta/navigation) for more information
 
 ## Getting Started
 
-To get started navigate to our [Quick Start](/docs/beta/getting-started/quick-start) guide.
+Ready to bring type-safety to your Next.js navigation? Head over to our [Quick Start](/docs/beta/getting-started/quick-start) guide to begin your journey with Next Safe Routes.
+
+Embrace the power of type-safe navigation and elevate your Next.js development experience today!
