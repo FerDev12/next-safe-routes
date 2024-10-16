@@ -1,15 +1,52 @@
 ---
 title: redirect
-description: An type-safe extension of Next.js redirect function.
+description: The redirect function is a type-safe wrapper around Next.js's native redirect function. It provides the same functionality but with added type checking and autocompletion for your routes.
 ---
 
-<Note title='Environment' type='warning'>
-  The redirect function created by createNextSafeNavigation can only be used in
-  server-components and server-actions. If you require client side navigation
-  consider using [useRouter](/docs/beta/navigation/use-router) or the
+<Note type='warning' title='Environment'>
+  The `redirect` function created by `createNextSafeNavigation` can only be used
+  in server components and server actions. For client-side navigation, consider
+  using [useRouter](/docs/beta/navigation/use-router) or the
   [Link](/docs/beta/navigation/link) component.
 </Note>
 
-## Example Usage
+Basic Usage
+Here's a simple example of how to use the redirect function:
+
+```tsx
+import { redirect } fro './navigation.ts'
+import { auth } from './auth.ts'
+
+export async function ProfilePage() {
+  const { user } = await auth()
+
+  if (!user) {
+    return redirect('/auth/sign-in/[[...provider]], {
+      params: {
+        provider: ['github']
+      },
+      query: {
+        from: 'profile'
+      }
+    })
+  }
+
+  // Rest of the component logic...
+  return <div>Welcome {user.name}</div>
+}
+```
+
+## Example in Action
+
+Here's a visual representation of `redirect` in action that demonstrates how `redirect` provides autocompletion and type checking as you type, helping to prevent errors and improve developer productivity.
+
+## Best Practices
+
+1. **Import from your navigation file**: Always import `redirect` from the file where you called `createNextSafeNavigation`.
+2. **Use in server-side code only**: Remember that `redirect` is for server-side use. For client-side navigation, use `useRouter` or `Link`.
+3. **Provide all required parameters**: Ensure you're providing all required route parameters to avoid runtime errors.
+4. **Keep your Routes type up to date**: Regenerate your Routes type whenever you add or modify routes in your application to ensure `redirect` has the most current route information.
+
+By leveraging the type-safe `redirect` function, you can ensure that your server-side redirects are always targeting valid routes with the correct parameters, catching potential errors at compile-time rather than runtime.
 
 ![redirect example GIF](/redirect-example.gif)

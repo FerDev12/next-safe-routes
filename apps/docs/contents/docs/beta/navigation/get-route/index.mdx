@@ -1,6 +1,6 @@
 ---
 title: getRoute
-description: getRoute is our main utility and is used under the hood by all other navigation utilities created by (createNextSafeNavigation)[/base/docs/navigation/create-next-safe-navigation] to parse any given route.
+description: The `getRoute` function is the cornerstone of Next Safe Routes, providing type-safe route generation for your Next.js application. It's used internally by all other navigation utilities created by [`createNextSafeNavigation`](/docs/navigation/create-next-safe-navigation), but can also be used standalone for maximum flexibility.
 ---
 
 ```ts
@@ -18,16 +18,16 @@ const route = getRoute('/products/[productId]', {
 console.log(route) // route === /products/123?foo=bar
 ```
 
-getRoute returns the final parsed route.
+In this example, `getRoute` takes a route pattern and an options object, then returns the final parsed route as a string.
 
 <Note title='Environment' type='info'>
   getRoute can be used in any place within your Next app including server
   components, client components, API routes, middleware and serve actions.
 </Note>
 
-In a way getRoute is like an escape hatch if you do not want to use our other routing utilities \([Link](/docs/beta/navigation/link), [useRouter](/docs/beta/use-router), [redirect](/docs/beta/redirect)).
+## Advanced Usage
 
-You can generate your desired route with getRoute and then use any method you want to navigate to that desired route:
+`getRoute` serves as an escape hatch when you need more control over route generation. You can use it to generate type-safe routes and then use them with any navigation method you prefer:
 
 ```tsx
 'use client'
@@ -47,6 +47,8 @@ export function Component() {
     })
 
     // Using our generated route with Next.js native router
+    router.prefetch(route)
+    // Some async logic...
     router.push(route)
   }
 
@@ -56,6 +58,32 @@ export function Component() {
 }
 ```
 
-## Example Usage
+This approach allows you to leverage the type safety of `getRoute` while still using Next.js's native routing methods
+
+## Type Safety
+
+One of the key benefits of `getRoute` is its type safety. It will catch errors at compile-time if you try to use a non-existent route, miss a required parameter, or provide an incorrect parameter type.
+
+```ts
+// This will cause a TypeScript error if '/products/[productId]' is not a valid route
+// or if 'productId' is not of the correct type
+const route = getRoute('/products/[productId]', {
+  params: {
+    productId: 123,
+  },
+});
+```
+
+## Example in Action
+
+Here's a visual representation of `getRoute` in action that demonstrates how `getRoute` provides autocompletion and type checking as you type, helping to prevent errors and improve developer productivity:
 
 ![getRoute example GIF](/get-route-example.gif)
+
+## Best Practices
+
+1. **Use with TypeScript**: While `getRoute` works with JavaScript, you get the most benefit when using TypeScript, as it enables full type checking.
+2. **Keep your Routes type up to date**: Remember to regenerate your Routes type whenever you add or modify routes in your application.
+3. **Use with other Next Safe Routes utilities**: While `getRoute` can be used standalone, it's often most powerful when used in conjunction with other Next Safe Routes utilities like `Link`, `useRouter`, and `redirect`.
+
+By leveraging `getRoute`, you can ensure type-safe route generation throughout your Next.js application, catching potential errors early and improving overall code quality.

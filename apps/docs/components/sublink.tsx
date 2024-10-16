@@ -10,7 +10,7 @@ import {
 import { cn } from '@/lib/utils';
 import { SheetClose } from '@/components/ui/sheet';
 import { Button } from './ui/button';
-import { ChevronDown, ChevronRight, ChevronsUpDownIcon } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
@@ -23,14 +23,18 @@ export default function SubLink({
   isSheet,
 }: EachRoute & { level: number; isSheet: boolean }) {
   const path = usePathname();
-  const [isOpen, setIsOpen] = useState(level == 0);
+  const [isOpen, setIsOpen] = useState(level === 0);
 
   useEffect(() => {
     if (path != href && path.includes(href)) setIsOpen(true);
   }, [href, path]);
 
   const Comp = (
-    <Anchor activeClassName='text-primary font-medium' href={href}>
+    <Anchor
+      className='text-sm hover:text-primary'
+      activeClassName='text-primary font-medium'
+      href={href}
+    >
       {title}
     </Anchor>
   );
@@ -42,7 +46,7 @@ export default function SubLink({
       Comp
     )
   ) : (
-    <h4 className='font-medium sm:text-sm text-primary'>{title}</h4>
+    <h4 className='text-sm text-primary font-medium'>{title}</h4>
   );
 
   if (!items) {
@@ -50,7 +54,7 @@ export default function SubLink({
   }
 
   return (
-    <div className='flex flex-col gap-1 w-full'>
+    <div className='flex flex-col gap-1 w-full transition-all'>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className='flex items-center gap-2'>
           {titleOrLink}
@@ -60,20 +64,21 @@ export default function SubLink({
               variant='link'
               size='icon'
             >
-              {!isOpen ? (
-                <ChevronRight className='h-[0.9rem] w-[0.9rem]' />
-              ) : (
-                <ChevronDown className='h-[0.9rem] w-[0.9rem]' />
-              )}
+              <ChevronRight
+                className={cn(
+                  'h-[0.9rem] w-[0.9rem] transition-transform',
+                  isOpen && 'rotate-90'
+                )}
+              />
               <span className='sr-only'>Toggle</span>
             </Button>
           </CollapsibleTrigger>
         </div>
-        <CollapsibleContent>
+        <CollapsibleContent className='block data-[state=closed]:opacity-0 data-[state=open]:opacity-100 data-[state=closed]:scale-y-0 data-[state=open]:scale-y-100 origin-top transition-all'>
           <div
             className={cn(
-              'flex flex-col items-start sm:text-sm dark:text-neutral-300/85 text-neutral-800 ml-0.5 mt-2.5 gap-3',
-              level > 0 && 'pl-4 border-l ml-1'
+              'flex flex-col items-start sm:text-sm dark:text-neutral-300/85 text-neutral-800 ml-0.5 mt-2.5 gap-3 pl-4 border-l'
+              // level > 0 && 'pl-4 border-l ml-1'
             )}
           >
             {items?.map((innerLink) => {
