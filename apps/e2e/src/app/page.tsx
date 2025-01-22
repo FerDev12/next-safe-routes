@@ -18,6 +18,7 @@ export default function HomePage() {
       },
     });
   };
+
   return (
     <main>
       <button onClick={handleClick}>Go to product by id</button>
