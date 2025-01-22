@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.1.1
+
+### Patch Changes
+
+- a740358: Fix scroll option type
+
 ## 0.1.0
 
 ### Minor Changes
