@@ -1,5 +1,5 @@
 // This file is auto-generated. Do not edit manually.
-// Modified at 2024-10-15T20:27:29.692Z
+// Modified at 2025-01-22T19:29:56.325Z
 
 
 /**
@@ -49,15 +49,15 @@
  */
 
 export type Routes = {
-  '/': { query?: Record<string, string> };
-  '/auth/sign-in/[[...provider]]': { params: { provider: string[] | undefined };query?: Record<string, string> };
-  '/auth/sign-up/[...provider]': { params: { provider: string[] };query?: Record<string, string> };
-  '/posts/[postId]': { params: { postId: string };query?: Record<string, string> };
-  '/products/[productId]': { params: { productId: string };query?: Record<string, string> };
-  '/profile': { context: 'org' | 'user';} & (
+  '/': { query?: Record<string, string>; };
+  '/auth/sign-in/[[...provider]]': { params?: { provider?: string[] }; query?: Record<string, string>; };
+  '/auth/sign-up/[...provider]': { params: { provider: string[] }; query?: Record<string, string>; };
+  '/posts/[postId]': { params: { postId: string }; query?: Record<string, string>; };
+  '/products/[productId]': { params: { productId: string }; query?: Record<string, string>; };
+  '/profile': { context: 'org' | 'user'; } & (
   | { context: 'org'; query: Record<string, string> & { orgId: string; employeeId?: string } }
     | { context: 'user'; query: Record<string, string> & { userId: string } }
-)
+) 
 };
 
 export type Path = keyof Routes
