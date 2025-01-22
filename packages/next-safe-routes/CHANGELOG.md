@@ -1,5 +1,11 @@
 # next-safe-routes
 
+## 0.1.0
+
+### Minor Changes
+
+- 5f46e6e: Add scroll options to client side router
+
 ## 0.0.15
 
 ### Patch Changes
