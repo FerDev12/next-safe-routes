@@ -21,13 +21,13 @@ export type SafeRouterInstance<Routes extends BaseRoutes> = Omit<
     // eslint-disable-next-line no-unused-vars
     pathname: Path,
     // eslint-disable-next-line no-unused-vars
-    ...pathConfig: SpreadablePathConfig<Routes, Path>
+    ...pathConfig: SpreadablePathConfig<Routes, Path> & [{ scroll?: boolean }]
   ) => ReturnType<AppRouterInstance['push']>;
   replace: <Path extends keyof Routes>(
     // eslint-disable-next-line no-unused-vars
     pathname: Path,
     // eslint-disable-next-line no-unused-vars
-    ...pathConfig: SpreadablePathConfig<Routes, Path>
+    ...pathConfig: SpreadablePathConfig<Routes, Path> & [{ scroll?: boolean }]
   ) => ReturnType<AppRouterInstance['replace']>;
 };
 
@@ -57,12 +57,13 @@ function createTypedRouter<Routes extends BaseRoutes>(
     },
     push: <Path extends keyof Routes>(
       pathname: Path,
-      ...pathConfig: SpreadablePathConfig<Routes, Path>
+      ...pathConfig: SpreadablePathConfig<Routes, Path> & [{ scroll?: boolean }]
     ) => {
       const [config] = pathConfig;
       try {
         return nextRouter.push(
-          getRoute(pathname as Path, config as PathConfig<Routes, Path>)
+          getRoute(pathname as Path, config as PathConfig<Routes, Path>),
+          { scroll: config.scroll }
         );
       } catch (error: any) {
         console.error(error, `Failed to push route: ${pathname.toString()}`);
@@ -71,12 +72,13 @@ function createTypedRouter<Routes extends BaseRoutes>(
     },
     replace: <Path extends keyof Routes>(
       pathname: Path,
-      ...pathConfig: SpreadablePathConfig<Routes, Path>
+      ...pathConfig: SpreadablePathConfig<Routes, Path> & [{ scroll?: boolean }]
     ) => {
       const [config] = pathConfig;
       try {
         return nextRouter.replace(
-          getRoute(pathname as Path, config as PathConfig<Routes, Path>)
+          getRoute(pathname as Path, config as PathConfig<Routes, Path>),
+          { scroll: config.scroll }
         );
       } catch (error: any) {
         console.error(error, `Failed to replace route: ${pathname.toString()}`);
